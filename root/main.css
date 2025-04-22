@@ -1,0 +1,562 @@
+:root {
+  --my-blue: #6EACDA;
+}
+
+
+body{
+    background-color: #020202;
+    overflow-x: hidden;
+
+    color: aliceblue;
+    margin: 0;
+
+}
+a {
+  color: var(--my-blue);
+}
+.section {
+  scroll-snap-align: start;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  padding: 5em;
+  padding-right: 130px !important;
+  }
+  .remove-blur{
+    filter: blur(0px) !important;
+}
+.View_1 .myPhoto{
+    padding: 20px;
+    width: 37%;
+    transform: scale(1.5);
+    z-index: -2;    
+    transition: 1.6s linear;
+    filter: blur(6px);
+    max-height: 61vh;
+    width: auto;
+}
+
+.title-block, .View_2 h1, .View_3 h2, .View_4{
+    font-family: "Bebas Neue", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 100;
+    font-style: normal;
+    font-variation-settings:"wdth" 100;
+}
+
+
+.View_1{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    font-family: "Bebas Neue", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 100;
+    font-style: normal;
+    font-variation-settings:"wdth" 100;
+
+}
+.View_1 h2{
+
+    margin: 0;
+    font-size: 2em;
+}
+.View_1 h1{
+    
+    margin: 0;
+    font-size: 6em;
+    text-underline-offset: 13px;
+
+}
+.View_1 .bg{
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, #ffffff26 0%, #cccccc00 70%, #00000000 100%);
+    top: -77%;
+    left: -78%;
+    z-index: -1;
+}
+.credom_logo{
+    
+    width: 4em;
+    height: 4em;
+    transition: all 1.6s ease-in-out;
+}
+.h_nav, .v_nav{
+    font-family: "Quicksand", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 100;
+    font-style: normal;
+    z-index: 100;
+}
+
+.View_2 p, .View_3 p{
+    font-family: "Quicksand", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+    z-index: 100;
+}
+
+.h_nav{
+    padding-top: 2em;
+    padding-left: 5em;
+    padding-right: 5em;
+    position: fixed;
+    display: flex;
+    width: -webkit-fill-available;
+    justify-content: space-between;
+}
+.h_nav a{
+    text-decoration: none;
+    color: white;
+    font-size: 1.5em;
+
+}
+
+.languages{
+    display: flex;
+    gap: 1em;
+}
+.title-block{
+    transition:  2s ;
+}
+
+.title-block h1, .title-block p{
+    margin: 0;
+}
+
+.title-block.hidden{
+    opacity: 0;
+}
+.social_icon{
+    width: 2em;
+}
+
+.View_2{
+    background-color: #020202;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 1;
+}
+.View_2 .myPhoto{
+    max-height: 61vh;
+    width: auto;
+    filter: blur(0.5px);
+}
+.View_2 .main_text{
+    width: -webkit-fill-available;
+    text-align: left;
+    
+    max-width: 520px;
+}
+
+.v_nav{
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    right: 0;
+    height: 100%;
+    justify-content: center;
+    padding-right: 45px;
+    gap: 20px;
+}
+.v_nav a {
+    color: white;
+    font-size: 1.5em;
+    text-decoration: none;
+    border-bottom: 1px solid;
+    overflow: hidden;
+    transition: transform 0.5s ease, color 0.5s ease, height 0.5s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    max-height: 30px; /* enough to show just the number initially */
+}
+
+.v_nav a p {
+    font-size: 0.5em;
+    opacity: 0;
+    max-height: 0;
+    transition: opacity 0.5s ease, max-height 0.5s ease;
+    margin: 0;
+}
+
+.v_nav a.active {
+  color: var(--my-blue);
+    transform: scale(1.3);
+    max-height: 100px; /* enough to show number + text */
+    font-weight: 600;
+}
+
+.v_nav a.active p {
+    opacity: 1;
+    max-height: 50px; /* reveals the p tag */
+}
+
+
+.View_3 {
+    padding: 60px 40px;
+    color: white;
+    text-align: center;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-around;
+  }
+  
+  .View_3 .text-area{
+    width: 50vw;
+    text-align: left;
+    padding: 20px;
+    
+  }
+
+  .View_3 h2 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    
+  }
+  
+  .project-description {
+    font-size: 1.2rem;
+    max-width: 800px;
+    margin: 0 auto 40px;
+    color: #cccccc;
+    margin-left: 0;
+  }
+  
+  .horizontal-scroll-wrapper {
+    display: flex;
+    overflow-y: scroll;
+    height: 50vh;
+    gap: 20px;
+    padding: 10px;
+    scroll-snap-type: y mandatory;
+    -webkit-overflow-scrolling: touch;
+    flex-direction: column;
+    width: 40%;
+  }
+  
+  .horizontal-scroll-wrapper::-webkit-scrollbar {
+    height: 2px;
+    width: 5px;
+  }
+  .horizontal-scroll-wrapper::-webkit-scrollbar-thumb {
+    background: #cccccc;
+    border-radius: 10px;
+  }
+  
+  .horizontal-scroll-wrapper img {
+    width: auto;
+    height: auto;
+    border-radius: 12px;
+    flex-shrink: 0;
+    scroll-snap-align: center;
+    transition: transform 0.3s ease;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+  }
+
+  .tools img {
+    height: 35px;
+    margin: 0 10px;
+}
+
+
+.tool-icon {
+    position: relative;
+    display: inline-block;
+    margin: 10px;
+  }
+  
+  .tool-icon img {
+    width: 35px;
+    height: auto;
+    cursor: pointer;
+  }
+  
+  /* Tooltip style */
+  .tool-icon::after {
+    font-family: "Quicksand", sans-serif;
+    font-weight: 600;
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    background:  var(--my-blue);
+    color: #000000;
+    font-size: 0.75em;
+    padding: 6px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  
+  .tool-icon:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-5px);
+  }
+  
+
+
+/* Initially grayscale */
+.reveal-on-view img,
+.reveal-on-view h2,
+.reveal-on-view p,
+.reveal-on-view .tools img {
+  filter: grayscale(100%);
+  opacity: 0.3;
+  transition: filter 1s ease, opacity 1s ease;
+}
+
+/* When active */
+.reveal-on-view.revealed img,
+.reveal-on-view.revealed h2,
+.reveal-on-view.revealed p,
+.reveal-on-view.revealed .tools img {
+  filter: grayscale(0%);
+  opacity: 1;
+}
+
+.reveal-on-view img,
+.reveal-on-view .tools img {
+  transition: filter 1s ease, opacity 1s ease;
+  transition-delay: calc(var(--i, 0) * 0.3s);
+}
+
+
+
+.View_4 {
+    padding: 60px 20px;
+    background-color: #0d0d0d;
+    color: #f2f2f2;
+    text-align: center;
+  }
+.View_4 h3{
+    font-weight: 100;
+}  
+  .View_4 h2 {
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    
+  }
+  
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  
+  .skill-category h3 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  .skill-category p {
+    font-size: 1em;
+    
+    line-height: 1.6;
+  }
+  
+
+  .View_5 {
+    padding: 40px 20px;
+    border-radius: 16px;
+  }
+  
+  .View_5 h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .cert-list {
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    overflow-y: scroll;
+    height: 70vh;
+}
+  
+  .cert-list li {
+    background: #222222;
+    border-bottom: 2px solid  var(--my-blue);
+    padding: 15px 20px;
+    border-radius: 0;
+    transition: 0.3s ease;
+    
+    width: 230px;
+    height: 220px;
+  }
+  
+  .cert-list li:hover {
+    box-shadow: none;
+  }
+  .cert-list li img{
+    height: 30px;
+    margin: 10px 0;
+  }
+  
+  .cert-list h3 {
+    margin: 0;
+    font-size: 1.2em
+  }
+  
+  .cert-list p {
+    margin: 5px 0
+  }
+  
+  .cert-list a {
+    display: inline-block;
+    margin-top: 6px;
+    color:  var(--my-blue);
+    font-size: 0.9em;
+    text-decoration: underline;
+  }
+  
+  .cert-date {
+    display: block;
+    font-size: 0.85em;
+    color: #666;
+    margin-top: 4px;
+  }
+  .website-demo{
+      position: relative;
+  width: 390px;   /* iPhone 14 Pro screen width */
+  height: 844px;
+  display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .website-demo iframe, .website-demo img {
+    scrollbar-width: none; 
+    -ms-overflow-style: none; 
+    
+    width: 390px;
+    height: 844px;
+    transform: scale(0.7);
+  }
+  .website-demo iframe{
+    width: 354px;
+    height: 806px;
+    border-radius: 43px;
+    transition: 0.6s;
+    filter: brightness(0);
+    
+  }
+  .website-demo iframe.phone_on{ 
+    filter: brightness(1);
+  }
+  .website-demo img.phone_on{
+    
+    box-shadow: 0px 0px 20px 20px rgb(255 255 255 / 12%);
+    border-radius: 56px;  
+
+  }
+  
+  
+  .website-demo img {
+    position: absolute;
+    
+    
+    transition: 1s;
+  }
+
+  .View_6 ul{
+    list-style: none;
+  }
+  .View_6 span{
+    list-style: none;
+    border: 3px #ffffff solid;
+    /* padding: 5px; */
+    border-radius: 50%;
+    width: 2em;
+    height: 2em;
+    max-width: 2em;
+    max-height: 2em;
+    font-size: 2em;
+    display: flex
+;
+    align-items: center;
+    justify-content: center;
+    margin: 0 7px;
+  }
+  .View_6 h5{
+    font-family: "Quicksand", sans-serif;
+    font-size: 1em;
+    font-weight: 300;
+  }
+
+  .experiences-container {
+    height: 100vh;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+  }
+  
+
+  #experiences {
+    height: 100vh;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none; 
+  }
+  
+  .experience-page {
+    height: 100vh;
+    scroll-snap-align: start;
+    align-content: space-around;
+    box-sizing: border-box;
+  }
+  
+  .contact-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    
+  }
+  
+  .contact-container {
+    max-width: 700px;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .contact-container h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .contact-intro {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .contact-info p {
+    margin: 0.5rem 0;
+  }
+  
+  .contact-info a {
+    
+    text-decoration: none;
+  }
+  
+  .contact-links {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+  }

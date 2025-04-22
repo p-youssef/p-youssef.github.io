@@ -1,0 +1,282 @@
+body{
+    background-color:#16191f;
+    font-family: "Comfortaa", sans-serif;
+    color: #f2f5f6;
+}
+
+nav {
+    
+    background-color: #232f3e;
+    backdrop-filter: blur(15px) saturate(86%);
+    
+    padding: 1px 1px 1px 20px;
+    
+}
+.navbar {
+    top: 0;
+    z-index: 100;
+    position: sticky;
+}
+
+select {
+    color: rgb(200, 200, 200);
+}
+
+.navbar-brand, 
+.navbar-brand:hover, 
+.nav-link,
+.nav-link:hover{
+
+    color: rgb(224, 224, 224);
+
+}
+
+
+.dashboard-outline-block{
+    padding: 10px;
+}
+
+
+.dashboard-inner-block{
+    width: 100%;
+    height: 100%;
+    background-color: rgb(42 46 51);
+    backdrop-filter: blur(15px) saturate(86%);
+    border-radius: 2px;
+    padding: 20px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    cursor: auto;
+}
+
+.list-group-item {
+    background-color: #5c5e62 !important;
+    color: #ffffff;
+}
+
+.list-group-item:hover{
+    color: #c5c5c5;
+}
+
+.page-path{
+    display: flex;
+    width: 100%;
+    background-color: hsla(0, 0%, 100%, .3);
+    backdrop-filter: blur(15px) saturate(86%);
+    border-radius: 16px;
+    padding: 10px;
+    padding-left: 20px;
+    margin-bottom: 10px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    
+}
+
+.page-path a{
+    padding: 0px 10px ;
+    color: rgb(196, 196, 196);
+    border-radius: 10px;
+    margin: 0px 5px;
+}
+
+.page-path a:hover{
+    background-color: rgba(0, 0, 0, 0.24);
+    text-decoration: none;
+}
+
+
+.django-form input, 
+.django-form select, 
+.django-form input::file-selector-button, 
+.django-form textarea
+{
+    background-color: #5c5e62;
+    border: 1px solid rgb(130 129 129);
+    padding: 6px 9px;
+    border-radius: 0;
+    width: 219px;
+}
+
+.django-form input::file-selector-button, .django-form input[type="file"]{
+    width: auto;
+}
+
+
+
+.django-form textarea{
+    width: 100%
+}
+
+
+.django-form label{
+    display: block;
+    font-size: small;
+    margin: 0;
+}
+
+.django-form-inline{
+    display: ruby;
+}
+
+
+.django-form .helptext{
+    color: rgb(141, 141, 141);
+    display: block;
+    font-size: small;
+}
+
+
+.id_label{
+    color: rgb(180, 180, 180);
+}
+
+
+.side_navbar{
+    width: 17rem;
+    height: calc(100vh - 72px);
+    background-color: #2a2e33;
+    position: fixed;
+    padding-left: 0;
+}
+
+
+.card-header {
+    margin-bottom: 0;
+    
+    border: 1px solid rgb(0, 0, 0);
+    text-align: left;
+    padding: 10px;
+    background-color: #40464d;
+    border-width: 0;
+    border-radius: 0 !important;
+    color: #FDFDFD;
+}
+.card-header:hover{
+    color: #f8f8f8;
+}
+
+.card{
+    border: 1px solid rgb(0, 0, 0);
+    border-radius: 0;
+}
+
+.card-body{
+    background: #5a626c;
+}
+
+
+.badge-primary {
+    color: #fff;
+    background-color: #797c80;
+    padding: 10px;
+}
+
+input, textarea {
+    color: rgb(255, 255, 255);
+}
+
+main{
+    width: calc(100% - 17rem);
+}
+
+@media (max-width: 992px) {
+    main{
+        width: 100%;
+    }
+  }
+  
+
+  .messages {
+    position: absolute;
+    z-index: 100;
+    width: 100vw;
+    padding: 0 ;
+    margin-left: 0;
+
+  }
+
+  .alert button{
+    outline: none;
+  }
+
+
+  .alert::marker {
+    display: none;
+    color: rgba(0,0,0,0);
+  }
+
+  .page-path{
+    flex-wrap: wrap;
+  }
+
+  hr{
+    background-color: #5c5e62;
+  }
+
+  a{
+    color: #c5c5c5;
+  }
+  a:hover{
+    color:#5c5e62;
+    text-decoration: none;
+  }
+
+  .color_picker_input{
+    width: 50px !important;
+    height: 50px !important;
+    padding: 0 !important;
+    border-width: 3px !important;
+    border-radius: 50% !important;
+    background-color: rgba(0, 0, 0, 0) !important;
+  }
+  input[type="color" i]::-webkit-color-swatch-wrapper {
+    padding: 0px !important;
+  }
+  input[type="color" i]::-webkit-color-swatch {
+    border: 0 !important;
+  }
+
+  .color_view{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+  }
+
+  .color_view_list{
+    display: flex;
+  }
+  .color_view_list li{
+    list-style: none;
+    margin: 8px;
+  }
+  .color_view_list li:hover{
+    filter: brightness(0.6);
+  }
+
+  .add_color_button{
+    padding: 0px;
+    width: 25px;
+    height: 25px;
+    position: relative;
+    border-radius: 50%;
+    right: 17px;
+    top: -3px;
+    padding-left: 1px;
+  }
+
+
+  .list-group-item a:hover{
+    color:rgb(0, 113, 206);
+  }
+  .list-group-item a{
+    color: rgb(0, 140, 255);
+  }
+  .list-group-item{
+    cursor: auto;
+  }
+  .list-group-item:hover{
+    color: #fff;
+  }
+
+  .list-group-item hr{
+    color: #7a7a7a;
+
+  }

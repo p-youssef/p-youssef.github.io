@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Philip Youssef</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #020202;
+      overflow-x: hidden;
+      font-family: "Bebas Neue", sans-serif;
+      font-weight: 100;
+      color: aliceblue;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      padding: 1em 2em;
+      z-index: 1000;
+      background: transparent;
+    }
+
+    .credom_logo {
+      width: 4em;
+      margin-right: 1em;
+    }
+
+    .title-block {
+      display: flex;
+      flex-direction: column;
+      line-height: 0.9;
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    .title-block h1 {
+      margin: 0;
+      font-size: 1.8em;
+      text-underline-offset: 6px;
+    }
+
+    .title-block h2 {
+      margin: 0;
+      font-size: 1em;
+    }
+
+    .title-block.hidden {
+      opacity: 0;
+    }
+
+    .intro-title {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      transition: all 0.6s ease-in-out;
+      z-index: 999;
+    }
+
+    .intro-title.scroll-up {
+      transform: translate(0, 0);
+      top: 1.5em;
+      left: 9em;
+      font-size: 0.6em;
+      text-align: left;
+    }
+
+    .View_1 {
+      width: 100%;
+      height: 200vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .myPhoto {
+      padding: 20px;
+      width: 37%;
+    }
+
+    .bg {
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, #ffffff26 0%, #cccccc00 70%, #00000000 100%);
+      top: -77%;
+      left: -78%;
+      z-index: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav with hidden text initially -->
+  <nav>
+    <img src="./CREDOM dark.png" class="credom_logo" alt="Logo">
+    <div class="title-block nav-position hidden">
+      <h1>Philip</h1>
+      <h1><u>Youssef</u></h1>
+      <h2>Full Stack Developer</h2>
+    </div>
+  </nav>
+
+  <!-- Centered title that animates up -->
+  <div class="intro-title" id="floatingTitle">
+    <h1>Philip</h1>
+    <h1><u>Youssef</u></h1>
+    <h2>Full Stack Developer</h2>
+  </div>
+
+  <!-- Main view with photo -->
+  <div class="View_1">
+    <div class="bg"></div>
+    <img src="./profile-pic.png" class="myPhoto" alt="Profile Photo">
+  </div>
+
+  <!-- Scroll logic -->
+  <script>
+    const introTitle = document.getElementById("floatingTitle");
+    const navText = document.querySelector(".title-block");
+
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > 100) {
+        introTitle.classList.add("scroll-up");
+        navText.classList.remove("hidden");
+      } else {
+        introTitle.classList.remove("scroll-up");
+        navText.classList.add("hidden");
+      }
+    });
+  </script>
+
+</body>
+</html>
