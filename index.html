@@ -13,17 +13,38 @@
 <link href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./main.css">
 </head>
+<script>
+  window.addEventListener("load", () => {
+    const loader = document.getElementById("loader");
+    loader.style.transition = "opacity 0.4s";
+    loader.style.opacity = 0;
+    setTimeout(() => {
+      loader.style.display = "none";
+    }, 1000);
+  });
+
+</script>
 
 <body>
+  <div id="loader">
+    <!-- Include your exact SVG content here -->
+    <div id="logo-container">
+      <div class="wave-circle"></div>
+
+      <img src="./CREDOM dark.svg"  alt="">
+    </div>
+  </div>
+  
+  
     <nav class="h_nav">
-        <div style="display: flex;align-items: center;">
+        <a href="#first" style="display: flex;align-items: center;">
             <img src="./CREDOM dark.png" class="credom_logo" alt="">
             <div class="title-block hidden">
                 
                 <h1><u>Philip Youssef</u></h1>
                 <p>Full Stack Developer</p>
             </div>
-        </div>
+        </a>
         
 
         <div class="languages">
@@ -65,7 +86,7 @@
     <div id="first" class="View_1 section">
         
         <div class="bg"></div>
-        <div>
+        <div class="title">
             <h1>Philip</h1>
             <h1><u>Youssef</u></h1>
             <h2>Full Stack Developer</h2>
