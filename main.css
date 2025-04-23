@@ -710,6 +710,9 @@ a {
 ;
     justify-content: center;
   }
+  .h_nav .title-block{
+    font-size: 0.5em;
+  }
 
 }
 
