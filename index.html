@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="./main.css">
 </head>
 <script>
+//
   window.addEventListener("load", () => {
     const loader = document.getElementById("loader");
     loader.style.transition = "opacity 0.4s";
@@ -26,6 +27,8 @@
 </script>
 
 <body>
+
+  
   <div id="loader">
     <!-- Include your exact SVG content here -->
     <div id="logo-container">
@@ -72,15 +75,19 @@
 
         <a href="#experiences">06
           <p>Experiences</p>
+          <p>2022 - 2024</p>
+        </a>
+        <a href="#experiences-2">
+          <p>2021 - 2022</p>
+        </a>
+        <a href="#experiences-3">
+          <p>2021 - 2023</p>
         </a>
 
         <a href="#contact">07
           <p>Contact</p>
         </a>
 
-        
-
-      
         
     </nav>
     <div id="first" class="View_1 section">
@@ -95,7 +102,10 @@
             </a>
             
           </div>
-        <img src="./profile-pic.png" class="myPhoto" alt="">
+        <div class="myPhotoContainer">
+          <img src="./profile-pic.png" class="myPhoto" alt="">
+        </div>
+        
     </div>
     <div id="about_me" class="View_2 section">
         <img src="./profile-pic2.png" class="myPhoto" alt="">
@@ -283,11 +293,13 @@
         </ul>
       </section>
       <section id="experiences" class="View_6 section experiences-container">
-        <h1 style="    position: absolute;margin-top: 55px;">Experiences</h1>
-        <div class="experience-page">
+        
+        <div class="experience-page section" style="padding: 0 !important;" >
           <ul>
             <li>
+              <h1 style="margin-top: 55px;">Experiences</h1>
               <div style="display: flex;">
+                
                 <span>1</span>
                 <h1>Full-Stack Developer / Team Lead</h1>
               </div>
@@ -305,7 +317,8 @@
           </ul>
         </div>
 
-
+      </section>
+      <section id="experiences-2" class="View_6 section experiences-container">
         
       
         <div class="experience-page">
@@ -330,6 +343,9 @@
           </ul>
         </div>
 
+      </section>
+      <section id="experiences-3" class="View_6 section experiences-container">
+        
 
         <div class="experience-page">
           <ul>

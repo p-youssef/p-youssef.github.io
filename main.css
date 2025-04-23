@@ -12,13 +12,16 @@ body{
     transition: 0.4s;
 
 }
+html, body {
+  overflow-x: hidden;
+}
 a {
   color: var(--my-blue);
 }
 .section {
   scroll-snap-align: start;
-  height: 100vh;
-  max-height: 100vh;
+  min-height: 100vh;
+  
   overflow: hidden;
   padding: 5em;
   padding-right: 130px !important;
@@ -35,6 +38,7 @@ a {
     filter: blur(6px);
     max-height: 61vh;
     width: auto;
+    position: relative;
 }
 
 .title-block, .View_2 h1, .View_3 h2, .View_4{
@@ -72,13 +76,14 @@ a {
 
 }
 .View_1 .bg{
-    position: absolute;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, #ffffff26 0%, #cccccc00 70%, #00000000 100%);
-    top: -77%;
-    left: -78%;
-    z-index: -1;
+  position: absolute;
+  height: 100vh;
+  /* background: radial-gradient(circle, #ffffff26 0%, #cccccc00 70%, #00000000 100%); */
+  top: 0px;
+  left: 0;
+  z-index: -1;
+  width: 100vw;
+  background: radial-gradient(ellipse at top left, #ffffff26, #00000000), radial-gradient(ellipse at bottom right, #00000000, transparent);
 }
 .credom_logo{
     
@@ -214,6 +219,11 @@ a {
     text-align: left;
     padding: 20px;
     
+    
+  }
+
+  .View_3 .text-area p{
+    font-size: medium;
   }
 
   .View_3 h2 {
@@ -489,6 +499,8 @@ a {
     height: 2em;
     max-width: 2em;
     max-height: 2em;
+    min-width: 2em;
+    min-height: 2em;
     font-size: 2em;
     display: flex
 ;
@@ -505,6 +517,8 @@ a {
   .experiences-container {
     height: 100vh;
     overflow-y: auto;
+    display: flex;
+    justify-content: center;
     scroll-snap-type: y mandatory;
   }
   
@@ -514,6 +528,9 @@ a {
     overflow-y: auto;
     scroll-snap-type: y mandatory;
     scrollbar-width: none; 
+    display: flex
+;
+    justify-content: center;
   }
   
   .experience-page {
@@ -521,6 +538,7 @@ a {
     scroll-snap-align: start;
     align-content: space-around;
     box-sizing: border-box;
+    max-width: 50em;
   }
   
   .contact-section {
@@ -647,6 +665,7 @@ a {
     .View_1 .myPhoto{
       position: absolute;
       right: -50%;
+      top: 30%;
     }
     .View_1 {
       justify-content: flex-start;
@@ -681,5 +700,17 @@ a {
   .section{
     padding: 3em !important;
   }
+  .View_1 .myPhotoContainer{
+    overflow: hidden;
+    width: 100vw;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    display: flex
+;
+    justify-content: center;
+  }
 
 }
+
+
