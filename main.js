@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // === Sections Setup ===
   const sectionIds = [
     "#first", "#about_me", "#project_1", "#project_2", "#skills", "#certifications",
-    "#experiences", "#experiences-1", "#experiences-2", "#experiences-3", "#contact"
+    "#experiences", "#experiences-1", "#experiences-2", "#experiences-3","#papers", "#papers-1", "#contact"
   ];
   const sections = sectionIds.map(id => document.querySelector(id)).filter(Boolean);
   const navLinks = document.querySelectorAll(".v_nav a");
@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (isWideScreen) {
     window.addEventListener("wheel", (e) => {
       const section = sections[currentIndex];
-      const isExperiences = section?.id === "experiences";
+      const isExperiences = section?.id === "experiences" || section?.id === "experiences";
 
       if (isExperiences) {
         const atTop = section.scrollTop === 0;
