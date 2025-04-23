@@ -638,6 +638,17 @@ a {
   .wave-circle::after {
     animation-delay: 1s;
   }
+
+  .read_more_button{
+    font-weight: 500;
+    background-color: #888888;
+    padding: 10px;
+    margin: 10px;
+    display: block;
+    color: black;
+    text-align: center;
+    text-decoration: none;
+  }
   
   @keyframes wave {
     0% {
@@ -719,5 +730,6 @@ a {
   }
 
 }
+
 
 
