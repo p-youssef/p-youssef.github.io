@@ -390,6 +390,7 @@ a {
     justify-content: center;
     overflow-y: scroll;
     height: 70vh;
+    scrollbar-width: none;
 }
   
   .cert-list li {
@@ -669,4 +670,16 @@ a {
     .View_2 .myPhoto{
       filter: brightness(0.5);
     }
+    #project_1_demo, #project_2_demo{
+      display: none;
+    }
+  
+  .View_3 .text-area {
+    width: auto !important;
+    align-self: center;
+  }
+  .section{
+    padding: 3em !important;
+  }
+
 }
