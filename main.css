@@ -733,6 +733,9 @@ a {
     font-size: 0.5em;
   }
 
+    .demo_frame{
+      display: none;
+    }
 }
 
 
