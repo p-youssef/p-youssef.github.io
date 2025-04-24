@@ -29,6 +29,8 @@
     <meta name="twitter:title" content="Philip Youssef">
     <meta name="twitter:description" content="Portfolio">
     <meta name="twitter:image" content="https://p-youssef.github.io/cover.png">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 </head>
 <script>
 //
@@ -158,11 +160,59 @@
               <img src="./project-1/8.png" alt="Dafa Screenshot 8">
               <img src="./project-1/9.png" alt="Dafa Screenshot 9">
             </div>-->
-            <div id="project_1_demo" class="website-demo">
-              <img src="./iphone-12-mockup.png" alt="">
-              <iframe src="./dafaa-demo/Dafaa.html" frameborder="0" ></iframe>
+            <div>
+
+              </div>
+              <div>
+                <h1>Demo</h1> 
+              <div id="project_1_demo" class="website-demo" style="height: 605px;overflow: hidden;">
+                
+                <img id="demo_1_im_2" src="./iphone-12-mockup.png" alt="" style="right:0;left: auto;">
+                <img id="demo_1_im_1" src="./apple-macbookpro.png" alt="" style="    width: 555px;left: 100%; right: auto; height: auto;box-shadow: 0px 50px 20px -35px rgb(255 255 255 / 12%);border-radius: 0;">
+                <iframe id="demo_1_f_1" src="./dafaa-demo/Dafaa.html" frameborder="0" ></iframe>
+                
+                
+              </div>
+              <div>
+                  
+              </div>
+              <button id="demo_1_b_1" style="cursor: pointer; background: none;color: white;border: 1px solid;font-size: 1.5em;border-radius: 9px;">
+                <i class="fa-solid fa-mobile-screen-button"></i>
+              </button>
+              <button id="demo_1_b_2" style="cursor: pointer; background: none;color: white;border: 1px solid;font-size: 1.5em;border-radius: 9px;">
+                <i class="fa-solid fa-laptop"></i>
+                
+              </button>
+              <script>
+                const demo_1_b_1 = document.getElementById('demo_1_b_1');
+                const demo_1_b_2 = document.getElementById('demo_1_b_2');
+                const demo_1_im_1 = document.getElementById('demo_1_im_1');
+                const demo_1_im_2 = document.getElementById('demo_1_im_2');
+                const demo_1_f_1 = document.getElementById('demo_1_f_1');
+                
+
+                demo_1_b_2.onclick = () =>{
+                  demo_1_im_1.style.transition = '1s cubic-bezier(0.71, -0.02, 0.52, 0.84)';
+                  demo_1_im_2.style.transition = '1s cubic-bezier(0, 0.75, 0.25, 1)';
+
+                  demo_1_im_1.style.left = '-21%';
+                  demo_1_im_2.style.right = '100%';
+                  
+                  demo_1_f_1.style="width: 1100px;transform: scale(0.27);height: 711px;border-radius: 25px;"
+                }
+                demo_1_b_1.onclick = () =>{
+                  demo_1_im_2.style.transition = '1s cubic-bezier(0.71, -0.02, 0.52, 0.84)';
+                  demo_1_im_1.style.transition = '1s cubic-bezier(0, 0.75, 0.25, 1)';
+
+                  demo_1_im_1.style.left = '100%';
+                  demo_1_im_2.style.right = '0';
+                  demo_1_f_1.style=""
+                }
+
+              </script>
               
             </div>
+            
             
             <div class="text-area reveal-on-view">
                 <h2>
@@ -207,11 +257,56 @@
           <img src="./project-2/2.png" alt="Dafa Screenshot 2">
           <img src="./project-2/3.png" alt="Dafa Screenshot 3">
         </div>-->
-        <div id="project_2_demo" class="website-demo">
-          <img src="./iphone-12-mockup.png" alt="">
-          <iframe src="./diagre-demo/دي أغري.html" frameborder="0" ></iframe>
+        <div>
+          <h1>Demo</h1> 
+        <div id="project_2_demo" class="website-demo" style="height: 605px;overflow: hidden;">
+          
+            <img id="demo_2_im_2" src="./iphone-12-mockup.png" alt="" style="right:0;left: auto;">
+            <img id="demo_2_im_1" src="./apple-macbookpro.png" alt="" style="    width: 555px;left: 100%; right: auto; height: auto;box-shadow: 0px 50px 20px -35px rgb(255 255 255 / 12%);border-radius: 0;">
+            <iframe id="demo_2_f_1" src="./diagre-demo/دي أغري.html" frameborder="0" ></iframe>
+            
+            
+          </div>
+          <div>
+              
+          </div>
+          <button id="demo_2_b_1" style="cursor: pointer; background: none;color: white;border: 1px solid;font-size: 1.5em;border-radius: 9px;">
+            <i class="fa-solid fa-mobile-screen-button"></i>
+          </button>
+          <button id="demo_2_b_2" style="cursor: pointer; background: none;color: white;border: 1px solid;font-size: 1.5em;border-radius: 9px;">
+            <i class="fa-solid fa-laptop"></i>
+            
+          </button>
+          <script>
+            const demo_2_b_1 = document.getElementById('demo_2_b_1');
+            const demo_2_b_2 = document.getElementById('demo_2_b_2');
+            const demo_2_im_1 = document.getElementById('demo_2_im_1');
+            const demo_2_im_2 = document.getElementById('demo_2_im_2');
+            const demo_2_f_1 = document.getElementById('demo_2_f_1');
+          
+
+            demo_2_b_2.onclick = () =>{
+              demo_2_im_1.style.transition = '1s cubic-bezier(0.71, -0.02, 0.52, 0.84)';
+              demo_2_im_2.style.transition = '1s cubic-bezier(0, 0.75, 0.25, 1)';
+
+              demo_2_im_1.style.left = '-21%';
+              demo_2_im_2.style.right = '100%';
+              
+              demo_2_f_1.style="width: 1100px;transform: scale(0.27);height: 711px;border-radius: 25px;"
+            }
+            demo_2_b_1.onclick = () =>{
+              demo_2_im_2.style.transition = '1s cubic-bezier(0.71, -0.02, 0.52, 0.84)';
+              demo_2_im_1.style.transition = '1s cubic-bezier(0, 0.75, 0.25, 1)';
+
+              demo_2_im_1.style.left = '100%';
+              demo_2_im_2.style.right = '0';
+              demo_2_f_1.style=""
+            }
+
+          </script>
           
         </div>
+       
         <div class="text-area reveal-on-view">
             <h2>
               <img src="./diagri.png" style="height: 1em;" alt="">

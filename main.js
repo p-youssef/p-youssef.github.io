@@ -182,3 +182,4 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Certifications section is loaded.");
   }
 });
+
