@@ -1,0 +1,1963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carcassonne</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #2d1b0e; color: #f0e6d3; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+
+#topBar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 16px; background: #1a0f06; border-bottom: 2px solid #5a3a1a;
+  z-index: 10; min-height: 60px; flex-shrink: 0;
+}
+.player-info {
+  display: flex; align-items: center; gap: 12px; padding: 6px 14px;
+  border-radius: 8px; border: 2px solid transparent; transition: all 0.3s;
+}
+.player-info.active { border-color: #ffd700; background: rgba(255,215,0,0.1); }
+.player-name { font-weight: bold; font-size: 16px; }
+.player-score { font-size: 22px; font-weight: bold; }
+.meeple-count { font-size: 13px; opacity: 0.8; }
+.p1-color { color: #e63946; }
+.p2-color { color: #457b9d; }
+
+#tileInfo {
+  display: flex; align-items: center; gap: 12px; font-size: 14px;
+}
+#tilePreview {
+  border: 2px solid #5a3a1a; border-radius: 4px; cursor: pointer;
+  width: 70px; height: 70px;
+}
+#rotateBtn, #skipMeepleBtn, #endTurnBtn {
+  padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer;
+  font-weight: bold; font-size: 13px; transition: background 0.2s;
+}
+#rotateBtn { background: #c77b30; color: #fff; }
+#rotateBtn:hover { background: #e08c35; }
+#skipMeepleBtn { background: #6b8e23; color: #fff; display: none; }
+#skipMeepleBtn:hover { background: #7ba428; }
+#endTurnBtn { background: #555; color: #fff; display: none; }
+
+#boardContainer {
+  flex: 1; overflow: hidden; position: relative; cursor: grab;
+}
+#boardContainer.dragging { cursor: grabbing; }
+#board {
+  position: absolute; transform-origin: 0 0;
+}
+.tile-slot {
+  position: absolute; width: 100px; height: 100px;
+}
+.tile-slot canvas { display: block; }
+.valid-slot {
+  position: absolute; width: 100px; height: 100px;
+  border: 2px dashed rgba(255,215,0,0.5); border-radius: 3px;
+  cursor: pointer; transition: all 0.25s;
+  background: radial-gradient(circle, rgba(255,215,0,0.08) 0%, rgba(255,215,0,0.02) 70%);
+  box-shadow: inset 0 0 15px rgba(255,215,0,0.05);
+}
+.valid-slot:hover {
+  background: radial-gradient(circle, rgba(255,215,0,0.25) 0%, rgba(255,215,0,0.08) 70%);
+  border-color: #ffd700; border-style: solid;
+  box-shadow: inset 0 0 20px rgba(255,215,0,0.15), 0 0 10px rgba(255,215,0,0.2);
+}
+
+.meeple-marker {
+  position: absolute; width: 22px; height: 26px;
+  transform: translate(-50%, -50%);
+  z-index: 5; pointer-events: none;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.6));
+}
+.meeple-spot {
+  position: absolute; width: 28px; height: 32px;
+  transform: translate(-50%, -50%);
+  z-index: 6; cursor: pointer;
+  transition: all 0.2s; animation: pulse 1.5s infinite;
+  filter: drop-shadow(0 0 4px rgba(255,215,0,0.6));
+}
+.meeple-spot:hover { transform: translate(-50%, -50%) scale(1.25); filter: drop-shadow(0 0 8px rgba(255,215,0,0.9)); }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+#gameOverlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.8); display: none; justify-content: center;
+  align-items: center; z-index: 100;
+}
+#gameOverlay.show { display: flex; }
+#gameOverPanel {
+  background: #3d2b1f; border: 3px solid #c77b30; border-radius: 12px;
+  padding: 30px 40px; text-align: center; max-width: 400px;
+}
+#gameOverPanel h2 { font-size: 28px; color: #ffd700; margin-bottom: 16px; }
+#gameOverPanel .final-scores { margin: 16px 0; font-size: 18px; line-height: 1.8; }
+#gameOverPanel button {
+  padding: 10px 28px; font-size: 16px; border: none; border-radius: 6px;
+  background: #c77b30; color: #fff; cursor: pointer; font-weight: bold;
+  margin-top: 12px;
+}
+#gameOverPanel button:hover { background: #e08c35; }
+
+#statusMsg {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.85); padding: 8px 20px; border-radius: 20px;
+  font-size: 14px; z-index: 20; border: 1px solid #5a3a1a;
+  transition: opacity 0.3s;
+}
+
+#zoomControls {
+  position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 4px; z-index: 15;
+}
+#zoomControls button {
+  width: 36px; height: 36px; border: 1px solid #5a3a1a; background: #1a0f06;
+  color: #f0e6d3; font-size: 18px; cursor: pointer; border-radius: 4px;
+}
+#zoomControls button:hover { background: #3d2b1f; }
+
+#startOverlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.85); display: flex; justify-content: center;
+  align-items: center; z-index: 200;
+}
+#startOverlay.hidden { display: none; }
+#startPanel {
+  background: #3d2b1f; border: 3px solid #c77b30; border-radius: 12px;
+  padding: 32px 40px; text-align: center; max-width: 380px; width: 90%;
+}
+#startPanel h2 { font-size: 26px; color: #ffd700; margin-bottom: 20px; }
+#startPanel label { display: block; text-align: left; font-size: 14px; color: #b8a68a; margin: 12px 0 4px; }
+#startPanel input {
+  width: 100%; padding: 8px 12px; font-size: 16px; border: 2px solid #5a3a1a;
+  border-radius: 6px; background: #2d1b0e; color: #f0e6d3;
+  outline: none; transition: border-color 0.2s;
+}
+#startPanel input:focus { border-color: #c77b30; }
+#startPanel input::placeholder { color: #6a5a48; }
+#startBtn {
+  margin-top: 22px; padding: 10px 32px; font-size: 16px; border: none;
+  border-radius: 6px; background: #c77b30; color: #fff; cursor: pointer;
+  font-weight: bold; transition: background 0.2s;
+}
+#startBtn:hover { background: #e08c35; }
+
+#rulesBtn {
+  position: fixed; top: 72px; right: 20px; z-index: 15;
+  width: 36px; height: 36px; border: 1px solid #5a3a1a; background: #1a0f06;
+  color: #ffd700; font-size: 20px; font-weight: bold; cursor: pointer;
+  border-radius: 4px; font-family: serif;
+}
+#rulesBtn:hover { background: #3d2b1f; }
+
+#rulesOverlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.8); display: none; justify-content: center;
+  align-items: center; z-index: 100;
+}
+#rulesOverlay.show { display: flex; }
+#rulesPanel {
+  background: #3d2b1f; border: 3px solid #c77b30; border-radius: 12px;
+  padding: 28px 34px; max-width: 520px; width: 90%; max-height: 85vh;
+  overflow-y: auto; position: relative;
+}
+#rulesPanel h2 { font-size: 24px; color: #ffd700; margin-bottom: 18px; text-align: center; }
+#rulesPanel h3 { font-size: 16px; color: #c77b30; margin: 16px 0 8px; border-bottom: 1px solid #5a3a1a; padding-bottom: 4px; }
+#rulesPanel table { width: 100%; border-collapse: collapse; margin: 6px 0 10px; font-size: 14px; }
+#rulesPanel th { text-align: left; color: #ffd700; padding: 5px 8px; border-bottom: 1px solid #5a3a1a; }
+#rulesPanel td { padding: 5px 8px; border-bottom: 1px solid rgba(90,58,26,0.4); vertical-align: top; }
+#rulesPanel .pts { color: #ffd700; font-weight: bold; white-space: nowrap; }
+#rulesPanel .swatch {
+  display: inline-block; width: 14px; height: 14px; border-radius: 3px;
+  vertical-align: middle; margin-right: 6px; border: 1px solid rgba(255,255,255,0.3);
+}
+#rulesPanel .note { font-size: 12px; color: #b8a68a; margin-top: 4px; line-height: 1.5; }
+.rules-section { display: flex; gap: 14px; align-items: flex-start; margin: 8px 0 14px; }
+.rules-tiles { display: flex; gap: 6px; flex-shrink: 0; flex-direction: column; align-items: center; }
+.rules-tiles canvas { border-radius: 4px; border: 1px solid rgba(255,255,255,0.15); }
+.rules-tiles .tile-label { font-size: 10px; color: #b8a68a; margin-top: 2px; }
+.rules-text { flex: 1; }
+.rules-text table { margin: 0 0 6px; }
+.rules-meeple-row { display: flex; gap: 10px; align-items: center; margin: 4px 0; }
+.rules-meeple-row svg { flex-shrink: 0; }
+#rulesCloseBtn {
+  position: absolute; top: 12px; right: 16px; background: none; border: none;
+  color: #f0e6d3; font-size: 22px; cursor: pointer; line-height: 1;
+}
+#rulesCloseBtn:hover { color: #ffd700; }
+#rulesPanel::-webkit-scrollbar { width: 8px; }
+#rulesPanel::-webkit-scrollbar-track { background: #2d1b0e; border-radius: 4px; }
+#rulesPanel::-webkit-scrollbar-thumb { background: #5a3a1a; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<div id="startOverlay">
+  <div id="startPanel">
+    <h2>Carcassonne</h2>
+    <label class="p1-color" for="name1">Player 1 Name</label>
+    <input type="text" id="name1" placeholder="Enter name..." maxlength="20" autofocus>
+    <label class="p2-color" for="name2">Player 2 Name</label>
+    <input type="text" id="name2" placeholder="Enter name..." maxlength="20">
+    <br>
+    <button id="startBtn">Start Game</button>
+  </div>
+</div>
+
+<div id="topBar">
+  <div class="player-info active" id="player1Info">
+    <div>
+      <div class="player-name p1-color" id="p1Name">Player 1</div>
+      <div class="meeple-count p1-color">Meeples: <span id="p1Meeples">7</span></div>
+    </div>
+    <div class="player-score p1-color" id="p1Score">0</div>
+  </div>
+  <div id="tileInfo">
+    <canvas id="tilePreview" width="70" height="70" title="Click to rotate"></canvas>
+    <div>
+      <button id="rotateBtn" title="Rotate tile (R)">Rotate</button><br>
+      <button id="skipMeepleBtn">Skip Meeple</button>
+      <button id="endTurnBtn">End Turn</button>
+    </div>
+    <div>Tiles left: <span id="tilesLeft">71</span></div>
+  </div>
+  <div class="player-info" id="player2Info">
+    <div class="player-score p2-color" id="p2Score">0</div>
+    <div>
+      <div class="player-name p2-color" id="p2Name">Player 2</div>
+      <div class="meeple-count p2-color">Meeples: <span id="p2Meeples">7</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="boardContainer">
+  <div id="board"></div>
+</div>
+
+<div id="statusMsg">Enter player names to begin</div>
+
+<div id="zoomControls">
+  <button id="zoomIn">+</button>
+  <button id="zoomOut">-</button>
+  <button id="zoomReset" title="Reset view">R</button>
+</div>
+
+<button id="rulesBtn" title="Rules &amp; Scoring">?</button>
+
+<div id="rulesOverlay">
+  <div id="rulesPanel">
+    <button id="rulesCloseBtn">&times;</button>
+    <h2>Rules &amp; Scoring</h2>
+
+    <h3>Cities</h3>
+    <div class="rules-section">
+      <div class="rules-tiles">
+        <canvas id="rulesTileCity1" width="56" height="56"></canvas>
+        <canvas id="rulesTileCity2" width="56" height="56"></canvas>
+      </div>
+      <div class="rules-text">
+        <table>
+          <tr><th>When</th><th>Points</th></tr>
+          <tr><td>Completed (all edges closed)</td><td class="pts">2 per tile + 2 per pennant</td></tr>
+          <tr><td>Incomplete (end of game)</td><td class="pts">1 per tile + 1 per pennant</td></tr>
+        </table>
+        <div class="note">A city is complete when its walls form a closed loop with no open edges.</div>
+      </div>
+    </div>
+
+    <h3>Roads</h3>
+    <div class="rules-section">
+      <div class="rules-tiles">
+        <canvas id="rulesTileRoad1" width="56" height="56"></canvas>
+        <canvas id="rulesTileRoad2" width="56" height="56"></canvas>
+      </div>
+      <div class="rules-text">
+        <table>
+          <tr><th>When</th><th>Points</th></tr>
+          <tr><td>Completed (both ends closed)</td><td class="pts">1 per tile</td></tr>
+          <tr><td>Incomplete (end of game)</td><td class="pts">1 per tile</td></tr>
+        </table>
+        <div class="note">A road is complete when both ends terminate at a crossroad, city, or monastery.</div>
+      </div>
+    </div>
+
+    <h3>Monasteries</h3>
+    <div class="rules-section">
+      <div class="rules-tiles">
+        <canvas id="rulesTileMon1" width="56" height="56"></canvas>
+        <canvas id="rulesTileMon2" width="56" height="56"></canvas>
+      </div>
+      <div class="rules-text">
+        <table>
+          <tr><th>When</th><th>Points</th></tr>
+          <tr><td>Completed (all 8 neighbors placed)</td><td class="pts">9 points</td></tr>
+          <tr><td>Incomplete (end of game)</td><td class="pts">1 + surrounding tiles</td></tr>
+        </table>
+        <div class="note">A monastery scores for itself plus each of the 8 adjacent tiles.</div>
+      </div>
+    </div>
+
+    <h3>Pennants</h3>
+    <div class="rules-section">
+      <div class="rules-tiles">
+        <canvas id="rulesTilePennant" width="56" height="56"></canvas>
+      </div>
+      <div class="rules-text">
+        <table>
+          <tr><th>When</th><th>Points</th></tr>
+          <tr><td>In a completed city</td><td class="pts">+2 bonus per pennant</td></tr>
+          <tr><td>In an incomplete city</td><td class="pts">+1 bonus per pennant</td></tr>
+        </table>
+        <div class="note">Pennants appear as blue shields on certain city tiles.</div>
+      </div>
+    </div>
+
+    <h3>Meeples</h3>
+    <div class="rules-section">
+      <div class="rules-tiles" style="gap:8px;">
+        <svg viewBox="0 0 22 26" width="32" height="38"><path d="M11 0 C13 0 15 2 15 4.5 C15 6.5 13.5 8 12 8.5 L14.5 11 L18 10 C20 9.5 22 11 22 13 C22 15 20 16.5 18 16 L14 15 L15 22 C15.5 24 14 26 12 26 L10 26 C8 26 6.5 24 7 22 L8 15 L4 16 C2 16.5 0 15 0 13 C0 11 2 9.5 4 10 L7.5 11 L10 8.5 C8.5 8 7 6.5 7 4.5 C7 2 9 0 11 0 Z" fill="#e63946" stroke="#fff" stroke-width="1.2"/></svg>
+        <svg viewBox="0 0 22 26" width="32" height="38"><path d="M11 0 C13 0 15 2 15 4.5 C15 6.5 13.5 8 12 8.5 L14.5 11 L18 10 C20 9.5 22 11 22 13 C22 15 20 16.5 18 16 L14 15 L15 22 C15.5 24 14 26 12 26 L10 26 C8 26 6.5 24 7 22 L8 15 L4 16 C2 16.5 0 15 0 13 C0 11 2 9.5 4 10 L7.5 11 L10 8.5 C8.5 8 7 6.5 7 4.5 C7 2 9 0 11 0 Z" fill="#457b9d" stroke="#fff" stroke-width="1.2"/></svg>
+      </div>
+      <div class="rules-text">
+        <table>
+          <tr><th>Rule</th><th>Detail</th></tr>
+          <tr><td>Per player</td><td class="pts">7 meeples</td></tr>
+          <tr><td>Placement</td><td>Place 1 meeple on a feature of the tile you just placed</td></tr>
+          <tr><td>Claiming</td><td>Cannot place on a feature already claimed by any meeple</td></tr>
+          <tr><td>Return</td><td>Meeples return when their feature is completed and scored</td></tr>
+        </table>
+        <div class="note">If multiple players share a completed feature (via merging), the player with the most meeples scores. Tied players both score full points.</div>
+      </div>
+    </div>
+
+    <h3>Controls</h3>
+    <table>
+      <tr><td>Rotate tile</td><td class="pts">Click preview / R key</td></tr>
+      <tr><td>Place tile</td><td class="pts">Click a gold dashed slot</td></tr>
+      <tr><td>Place meeple</td><td class="pts">Click a pulsing meeple</td></tr>
+      <tr><td>Skip meeple</td><td class="pts">Escape key / Skip button</td></tr>
+      <tr><td>Pan board</td><td class="pts">Click &amp; drag</td></tr>
+      <tr><td>Zoom</td><td class="pts">Scroll wheel / +/- buttons</td></tr>
+    </table>
+  </div>
+</div>
+
+<div id="gameOverlay">
+  <div id="gameOverPanel">
+    <h2>Game Over!</h2>
+    <div class="final-scores" id="finalScores"></div>
+    <button onclick="location.reload()">Play Again</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CONSTANTS
+// ============================================================
+const TILE_SIZE = 100;
+const CITY = 'city';
+const ROAD = 'road';
+const FIELD = 'field';
+const MONASTERY = 'monastery';
+
+const COLORS = {
+  player: ['#e63946', '#457b9d'],
+};
+
+// ============================================================
+// TILE DEFINITIONS - Base game Carcassonne (72 tiles)
+// Each tile has:
+//   edges: [N, E, S, W] - what type is on each edge
+//   features: array of { type, edges (which edge indices), connected (bool for cities spanning whole side) }
+//   monastery: bool
+//   pennant: bool
+//   count: number in deck
+//   start: bool (is starting tile)
+//
+// Edge segments (for field adjacency): each edge has two field "slots" (left and right of center)
+// We track which feature group each sub-edge belongs to
+// ============================================================
+
+// Feature definition helper
+// segments: array of {type, edges, sides} where sides maps to positions on the tile for meeple placement
+// For simplicity, we define tiles with their key properties
+
+const TILE_DEFS = [
+  // A: Monastery alone in field (x2)
+  { id:'A', edges:[FIELD,FIELD,ROAD,FIELD], monastery:true, roads:[[2]], cities:[], count:2 },
+  // B: Monastery alone in field, no road (x4)
+  { id:'B', edges:[FIELD,FIELD,FIELD,FIELD], monastery:true, roads:[], cities:[], count:4 },
+  // C: Full city tile (x1)
+  { id:'C', edges:[CITY,CITY,CITY,CITY], monastery:false, roads:[], cities:[[0,1,2,3]], pennant:true, count:1 },
+  // D: Road with city on top (start tile) (x4)
+  { id:'D', edges:[CITY,ROAD,FIELD,ROAD], monastery:false, roads:[[1,3]], cities:[[0]], count:4, start:true },
+  // E: City on top (x5)
+  { id:'E', edges:[CITY,FIELD,FIELD,FIELD], monastery:false, roads:[], cities:[[0]], count:5 },
+  // F: City on left and right, connected, pennant (x2)
+  { id:'F', edges:[FIELD,CITY,FIELD,CITY], monastery:false, roads:[], cities:[[1,3]], pennant:true, count:2 },
+  // G: City on top and bottom, connected (x1)
+  { id:'G', edges:[CITY,FIELD,CITY,FIELD], monastery:false, roads:[], cities:[[0,2]], count:1 },
+  // H: City on left and right, NOT connected (x3)
+  { id:'H', edges:[FIELD,CITY,FIELD,CITY], monastery:false, roads:[], cities:[[1],[3]], count:3 },
+  // I: City on top and right, NOT connected (x2)
+  { id:'I', edges:[CITY,FIELD,FIELD,CITY], monastery:false, roads:[], cities:[[0],[3]], count:2 },
+  // J: City on top, road curving from east to south (x3)
+  { id:'J', edges:[CITY,ROAD,ROAD,FIELD], monastery:false, roads:[[1,2]], cities:[[0]], count:3 },
+  // K: City on top, road curving from west to south (x3)
+  { id:'K', edges:[CITY,FIELD,ROAD,ROAD], monastery:false, roads:[[2,3]], cities:[[0]], count:3 },
+  // L: City on top, road curving from west to east (x3) - actually 3-way
+  { id:'L', edges:[CITY,ROAD,ROAD,ROAD], monastery:false, roads:[[1],[2],[3]], cities:[[0]], count:3 },
+  // M: City covering top and left, connected, pennant (x2)
+  { id:'M', edges:[CITY,FIELD,FIELD,CITY], monastery:false, roads:[], cities:[[0,3]], pennant:true, count:2 },
+  // N: City covering top and left, connected (x3)
+  { id:'N', edges:[CITY,FIELD,FIELD,CITY], monastery:false, roads:[], cities:[[0,3]], count:3 },
+  // O: City covering top and left with road (x2), pennant
+  { id:'O', edges:[CITY,ROAD,ROAD,CITY], monastery:false, roads:[[1,2]], cities:[[0,3]], pennant:true, count:2 },
+  // P: City covering top and left with road (x3)
+  { id:'P', edges:[CITY,ROAD,ROAD,CITY], monastery:false, roads:[[1,2]], cities:[[0,3]], count:3 },
+  // Q: City covering top, right, left - pennant (x1)
+  { id:'Q', edges:[CITY,CITY,FIELD,CITY], monastery:false, roads:[], cities:[[0,1,3]], pennant:true, count:1 },
+  // R: City covering top, right, left (x3)
+  { id:'R', edges:[CITY,CITY,FIELD,CITY], monastery:false, roads:[], cities:[[0,1,3]], count:3 },
+  // S: City covering top, right, left with road - pennant (x2)
+  { id:'S', edges:[CITY,CITY,ROAD,CITY], monastery:false, roads:[[2]], cities:[[0,1,3]], pennant:true, count:2 },
+  // T: City covering top, right, left with road (x1)
+  { id:'T', edges:[CITY,CITY,ROAD,CITY], monastery:false, roads:[[2]], cities:[[0,1,3]], count:1 },
+  // U: Road straight NS (x8)
+  { id:'U', edges:[ROAD,FIELD,ROAD,FIELD], monastery:false, roads:[[0,2]], cities:[], count:8 },
+  // V: Road curve (x9)
+  { id:'V', edges:[FIELD,FIELD,ROAD,ROAD], monastery:false, roads:[[2,3]], cities:[], count:9 },
+  // W: Road T-junction (x4)
+  { id:'W', edges:[FIELD,ROAD,ROAD,ROAD], monastery:false, roads:[[1],[2],[3]], cities:[], count:4 },
+  // X: Road crossroads (x1)
+  { id:'X', edges:[ROAD,ROAD,ROAD,ROAD], monastery:false, roads:[[0],[1],[2],[3]], cities:[], count:1 },
+];
+
+// ============================================================
+// GAME STATE
+// ============================================================
+let board = {}; // key "x,y" => { tile, rotation, meeples:[] }
+let deck = [];
+let currentTile = null;
+let currentRotation = 0;
+let currentPlayer = 0; // 0 or 1
+let players = [
+  { score: 0, meeples: 7 },
+  { score: 0, meeples: 7 },
+];
+let playerNames = ['Player 1', 'Player 2'];
+let phase = 'placeTile'; // 'placeTile', 'placeMeeple', 'gameOver'
+let validPositions = [];
+let placedPos = null; // {x,y} of just-placed tile
+let meepleSpots = []; // DOM elements for meeple placement spots
+
+// Pan & zoom
+let panX = 0, panY = 0, zoom = 1;
+let isPanning = false, panStartX = 0, panStartY = 0, panStartPanX = 0, panStartPanY = 0;
+
+// ============================================================
+// INITIALIZATION
+// ============================================================
+function startGame() {
+  const n1 = document.getElementById('name1').value.trim();
+  const n2 = document.getElementById('name2').value.trim();
+  playerNames[0] = n1 || 'Player 1';
+  playerNames[1] = n2 || 'Player 2';
+
+  document.getElementById('p1Name').textContent = playerNames[0];
+  document.getElementById('p2Name').textContent = playerNames[1];
+  document.getElementById('startOverlay').classList.add('hidden');
+
+  init();
+}
+
+function init() {
+  buildDeck();
+  // Place start tile (D) at 0,0
+  const startIdx = deck.findIndex(t => t.start);
+  const startTile = deck.splice(startIdx, 1)[0];
+  board['0,0'] = { tile: startTile, rotation: 0, meeples: [] };
+
+  // Center view
+  const container = document.getElementById('boardContainer');
+  panX = container.clientWidth / 2 - TILE_SIZE / 2;
+  panY = container.clientHeight / 2 - TILE_SIZE / 2;
+
+  drawCurrentTile();
+  currentTile = drawFromDeck();
+  currentRotation = 0;
+
+  setupEvents();
+  updateBoard();
+  updateUI();
+  showStatus(`${playerNames[0]}: Place your tile`);
+}
+
+function buildDeck() {
+  deck = [];
+  for (const def of TILE_DEFS) {
+    for (let i = 0; i < def.count; i++) {
+      deck.push({ ...def });
+    }
+  }
+  // Shuffle
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+}
+
+function drawFromDeck() {
+  if (deck.length === 0) return null;
+  // Find a tile that can be placed somewhere
+  for (let attempt = 0; attempt < deck.length; attempt++) {
+    const tile = deck[attempt];
+    // Check if this tile can be placed in any valid position with any rotation
+    const empties = getEmptyNeighbors();
+    for (const pos of empties) {
+      for (let r = 0; r < 4; r++) {
+        if (canPlace(tile, r, pos.x, pos.y)) {
+          deck.splice(attempt, 1);
+          return tile;
+        }
+      }
+    }
+  }
+  // No placeable tile found - game over
+  return null;
+}
+
+// ============================================================
+// TILE EDGE LOGIC
+// ============================================================
+function getEdges(tile, rotation) {
+  const e = [...tile.edges];
+  const r = ((rotation % 4) + 4) % 4;
+  for (let i = 0; i < r; i++) {
+    e.unshift(e.pop());
+  }
+  return e; // [N, E, S, W]
+}
+
+function oppositeDir(dir) { return (dir + 2) % 4; }
+
+function getNeighborKey(x, y, dir) {
+  const dx = [0, 1, 0, -1];
+  const dy = [-1, 0, 1, 0];
+  return `${x + dx[dir]},${y + dy[dir]}`;
+}
+
+function canPlace(tile, rotation, x, y) {
+  const edges = getEdges(tile, rotation);
+  let hasNeighbor = false;
+  for (let dir = 0; dir < 4; dir++) {
+    const nk = getNeighborKey(x, y, dir);
+    const neighbor = board[nk];
+    if (neighbor) {
+      hasNeighbor = true;
+      const nEdges = getEdges(neighbor.tile, neighbor.rotation);
+      if (edges[dir] !== nEdges[oppositeDir(dir)]) return false;
+    }
+  }
+  return hasNeighbor;
+}
+
+function getEmptyNeighbors() {
+  const empties = new Set();
+  for (const key of Object.keys(board)) {
+    const [x, y] = key.split(',').map(Number);
+    for (let dir = 0; dir < 4; dir++) {
+      const nk = getNeighborKey(x, y, dir);
+      if (!board[nk]) empties.add(nk);
+    }
+  }
+  return [...empties].map(k => { const [x,y] = k.split(',').map(Number); return {x,y}; });
+}
+
+function getValidPositions(tile, rotation) {
+  const empties = getEmptyNeighbors();
+  return empties.filter(p => canPlace(tile, rotation, p.x, p.y));
+}
+
+// ============================================================
+// FEATURE TRACKING - find connected features across tiles
+// ============================================================
+
+// Get rotated features for a placed tile
+function getRotatedCities(tile, rotation) {
+  const r = ((rotation % 4) + 4) % 4;
+  return tile.cities.map(group =>
+    group.map(edge => (edge + r) % 4)
+  );
+}
+
+function getRotatedRoads(tile, rotation) {
+  const r = ((rotation % 4) + 4) % 4;
+  return tile.roads.map(group =>
+    group.map(edge => (edge + r) % 4)
+  );
+}
+
+// Helper: compare two edge arrays (order-independent)
+function sameEdgeSet(a, b) {
+  if (a.length !== b.length) return false;
+  const sa = [...a].sort();
+  const sb = [...b].sort();
+  return sa.every((v, i) => v === sb[i]);
+}
+
+// Check if a meeple belongs to a specific feature group on its tile
+function meepleBelongsToGroup(meeple, group) {
+  // A meeple's featureEdges should share at least one edge with the group
+  // and the group should be the same connected group
+  return sameEdgeSet(meeple.featureEdges, group);
+}
+
+// Find which feature group on a tile contains a given edge
+function findGroup(groups, edge) {
+  return groups.find(g => g.includes(edge)) || null;
+}
+
+// Trace a city feature starting from a specific city group on a tile
+// Returns { tiles: Set of "x,y" keys, complete: bool, meeples: [{player, x, y}], pennants: number }
+function traceCity(startX, startY, startEdges) {
+  const visited = new Set();
+  const tiles = new Set();
+  const queue = [];
+  const meeplesFound = [];
+  const meepleIds = new Set(); // avoid duplicates
+  let pennants = 0;
+  let complete = true;
+
+  for (const edge of startEdges) {
+    const key = `${startX},${startY},${edge}`;
+    if (!visited.has(key)) {
+      visited.add(key);
+      queue.push({ x: startX, y: startY, edge });
+    }
+  }
+
+  while (queue.length > 0) {
+    const { x, y, edge } = queue.shift();
+    const tk = `${x},${y}`;
+    tiles.add(tk);
+
+    const placed = board[tk];
+    if (!placed) { complete = false; continue; }
+
+    const cityGroups = getRotatedCities(placed.tile, placed.rotation);
+    const group = findGroup(cityGroups, edge);
+    if (!group) { complete = false; continue; }
+
+    // Add all other edges in this group (connected internally)
+    for (const otherEdge of group) {
+      const ek = `${x},${y},${otherEdge}`;
+      if (!visited.has(ek)) {
+        visited.add(ek);
+        queue.push({ x, y, edge: otherEdge });
+      }
+    }
+
+    // Check meeples on this city group
+    if (placed.meeples) {
+      for (const m of placed.meeples) {
+        const mid = `${m.player},${m.x},${m.y},${m.featureType}`;
+        if (m.featureType === CITY && !meepleIds.has(mid)) {
+          // Check if this meeple's feature edges match this group
+          if (sameEdgeSet(m.featureEdges, group)) {
+            meeplesFound.push(m);
+            meepleIds.add(mid);
+          }
+        }
+      }
+    }
+
+    // Follow edge to neighbor
+    const nk = getNeighborKey(x, y, edge);
+    const [nx, ny] = nk.split(',').map(Number);
+    const oppEdge = oppositeDir(edge);
+    const nKey = `${nx},${ny},${oppEdge}`;
+    if (!visited.has(nKey)) {
+      if (board[nk]) {
+        visited.add(nKey);
+        queue.push({ x: nx, y: ny, edge: oppEdge });
+      } else {
+        complete = false;
+      }
+    }
+  }
+
+  // Count pennants
+  for (const tk of tiles) {
+    const placed = board[tk];
+    if (placed && placed.tile.pennant) {
+      const cityGroups = getRotatedCities(placed.tile, placed.rotation);
+      if (cityGroups.length > 0) {
+        const mainGroup = cityGroups[0];
+        for (const edge of mainGroup) {
+          if (visited.has(`${tk},${edge}`)) {
+            pennants++;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  return { tiles, complete, meeples: meeplesFound, pennants };
+}
+
+function traceRoad(startX, startY, startEdges) {
+  const visited = new Set();
+  const tiles = new Set();
+  const queue = [];
+  const meeplesFound = [];
+  const meepleIds = new Set();
+  let complete = true;
+
+  for (const edge of startEdges) {
+    const key = `${startX},${startY},${edge}`;
+    if (!visited.has(key)) {
+      visited.add(key);
+      queue.push({ x: startX, y: startY, edge });
+    }
+  }
+
+  while (queue.length > 0) {
+    const { x, y, edge } = queue.shift();
+    const tk = `${x},${y}`;
+    tiles.add(tk);
+
+    const placed = board[tk];
+    if (!placed) { complete = false; continue; }
+
+    const roadGroups = getRotatedRoads(placed.tile, placed.rotation);
+    const group = findGroup(roadGroups, edge);
+    if (!group) { complete = false; continue; }
+
+    for (const otherEdge of group) {
+      const ek = `${x},${y},${otherEdge}`;
+      if (!visited.has(ek)) {
+        visited.add(ek);
+        queue.push({ x, y, edge: otherEdge });
+      }
+    }
+
+    if (placed.meeples) {
+      for (const m of placed.meeples) {
+        const mid = `${m.player},${m.x},${m.y},${m.featureType}`;
+        if (m.featureType === ROAD && !meepleIds.has(mid)) {
+          if (sameEdgeSet(m.featureEdges, group)) {
+            meeplesFound.push(m);
+            meepleIds.add(mid);
+          }
+        }
+      }
+    }
+
+    const nk = getNeighborKey(x, y, edge);
+    const [nx, ny] = nk.split(',').map(Number);
+    const oppEdge = oppositeDir(edge);
+    const nKey = `${nx},${ny},${oppEdge}`;
+    if (!visited.has(nKey)) {
+      if (board[nk]) {
+        visited.add(nKey);
+        queue.push({ x: nx, y: ny, edge: oppEdge });
+      } else {
+        complete = false;
+      }
+    }
+  }
+
+  return { tiles, complete, meeples: meeplesFound };
+}
+
+function traceMonastery(x, y) {
+  let count = 0;
+  const meeples = [];
+  const placed = board[`${x},${y}`];
+  if (!placed) return { count: 0, complete: false, meeples: [] };
+
+  if (placed.meeples) {
+    for (const m of placed.meeples) {
+      if (m.featureType === MONASTERY) meeples.push(m);
+    }
+  }
+
+  for (let dx = -1; dx <= 1; dx++) {
+    for (let dy = -1; dy <= 1; dy++) {
+      if (board[`${x+dx},${y+dy}`]) count++;
+    }
+  }
+  return { count, complete: count === 9, meeples };
+}
+
+// Check if a feature (city/road) is already claimed by any meeple
+function isFeatureClaimed(type, x, y, edges) {
+  if (type === CITY) {
+    const result = traceCity(x, y, edges);
+    return result.meeples.length > 0;
+  } else if (type === ROAD) {
+    const result = traceRoad(x, y, edges);
+    return result.meeples.length > 0;
+  }
+  return false;
+}
+
+// ============================================================
+// SCORING
+// ============================================================
+function scoreCompletedFeatures(px, py) {
+  const placed = board[`${px},${py}`];
+  if (!placed) return;
+
+  const scored = [];
+
+  // Check cities touching this tile
+  const checkedCities = new Set();
+  const cityGroups = getRotatedCities(placed.tile, placed.rotation);
+  for (const group of cityGroups) {
+    const gk = [...group].sort().join(',');
+    if (checkedCities.has(gk)) continue;
+    checkedCities.add(gk);
+    const result = traceCity(px, py, group);
+    if (result.complete && result.meeples.length > 0) {
+      const points = result.tiles.size * 2 + result.pennants * 2;
+      awardPoints(result.meeples, points);
+      scored.push({ type: CITY, points });
+    }
+  }
+
+  // Check roads touching this tile
+  const checkedRoads = new Set();
+  const roadGroups = getRotatedRoads(placed.tile, placed.rotation);
+  for (const group of roadGroups) {
+    const gk = [...group].sort().join(',');
+    if (checkedRoads.has(gk)) continue;
+    checkedRoads.add(gk);
+    const result = traceRoad(px, py, group);
+    if (result.complete && result.meeples.length > 0) {
+      const points = result.tiles.size;
+      awardPoints(result.meeples, points);
+      scored.push({ type: ROAD, points });
+    }
+  }
+
+  // Check monasteries (this tile and surrounding)
+  for (let dx = -1; dx <= 1; dx++) {
+    for (let dy = -1; dy <= 1; dy++) {
+      const mx = px + dx, my = py + dy;
+      const mk = `${mx},${my}`;
+      const mp = board[mk];
+      if (mp && mp.tile.monastery) {
+        const result = traceMonastery(mx, my);
+        if (result.complete && result.meeples.length > 0) {
+          awardPoints(result.meeples, 9);
+          scored.push({ type: MONASTERY, points: 9 });
+        }
+      }
+    }
+  }
+
+  // Also check cities/roads on neighboring tiles that may have just been completed
+  for (let dir = 0; dir < 4; dir++) {
+    const nk = getNeighborKey(px, py, dir);
+    const neighbor = board[nk];
+    if (!neighbor) continue;
+    const [nx, ny] = nk.split(',').map(Number);
+
+    const nCityGroups = getRotatedCities(neighbor.tile, neighbor.rotation);
+    for (const group of nCityGroups) {
+      if (!group.includes(oppositeDir(dir))) continue;
+      const result = traceCity(nx, ny, group);
+      if (result.complete && result.meeples.length > 0) {
+        // Check we haven't already scored this
+        const tileKeys = [...result.tiles].sort().join('|');
+        if (!scored.find(s => s._tileKeys === tileKeys && s.type === CITY)) {
+          const points = result.tiles.size * 2 + result.pennants * 2;
+          awardPoints(result.meeples, points);
+          scored.push({ type: CITY, points, _tileKeys: tileKeys });
+        }
+      }
+    }
+
+    const nRoadGroups = getRotatedRoads(neighbor.tile, neighbor.rotation);
+    for (const group of nRoadGroups) {
+      if (!group.includes(oppositeDir(dir))) continue;
+      const result = traceRoad(nx, ny, group);
+      if (result.complete && result.meeples.length > 0) {
+        const tileKeys = [...result.tiles].sort().join('|');
+        if (!scored.find(s => s._tileKeys === tileKeys && s.type === ROAD)) {
+          const points = result.tiles.size;
+          awardPoints(result.meeples, points);
+          scored.push({ type: ROAD, points, _tileKeys: tileKeys });
+        }
+      }
+    }
+  }
+
+  return scored;
+}
+
+function awardPoints(meeples, points) {
+  if (meeples.length === 0) return;
+
+  // Count meeples per player
+  const counts = [0, 0];
+  for (const m of meeples) counts[m.player]++;
+
+  const maxCount = Math.max(...counts);
+  // Award to player(s) with most meeples
+  for (let p = 0; p < 2; p++) {
+    if (counts[p] === maxCount && counts[p] > 0) {
+      players[p].score += points;
+    }
+  }
+
+  // Return all meeples
+  for (const m of meeples) {
+    players[m.player].meeples++;
+    // Remove from board
+    const tk = `${m.x},${m.y}`;
+    const placed = board[tk];
+    if (placed) {
+      placed.meeples = placed.meeples.filter(mm => mm !== m);
+    }
+  }
+}
+
+function endGameScoring() {
+  // Score incomplete features
+  for (const key of Object.keys(board)) {
+    const [x, y] = key.split(',').map(Number);
+    const placed = board[key];
+
+    // Cities
+    const cityGroups = getRotatedCities(placed.tile, placed.rotation);
+    for (const group of cityGroups) {
+      const result = traceCity(x, y, group);
+      if (!result.complete && result.meeples.length > 0) {
+        const points = result.tiles.size + result.pennants;
+        awardPoints(result.meeples, points);
+      }
+    }
+
+    // Roads
+    const roadGroups = getRotatedRoads(placed.tile, placed.rotation);
+    for (const group of roadGroups) {
+      const result = traceRoad(x, y, group);
+      if (!result.complete && result.meeples.length > 0) {
+        const points = result.tiles.size;
+        awardPoints(result.meeples, points);
+      }
+    }
+
+    // Monasteries
+    if (placed.tile.monastery) {
+      const result = traceMonastery(x, y);
+      if (!result.complete && result.meeples.length > 0) {
+        awardPoints(result.meeples, result.count);
+      }
+    }
+  }
+}
+
+// ============================================================
+// TILE RENDERING (Canvas) - Enhanced Graphics
+// ============================================================
+
+// Seeded random for consistent tile textures
+function seededRandom(seed) {
+  let s = seed;
+  return function() {
+    s = (s * 16807 + 0) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+}
+
+// Pre-generate a grass texture pattern
+let grassPattern = null;
+let cityPattern = null;
+function generatePatterns() {
+  // Grass
+  const gc = document.createElement('canvas');
+  gc.width = 64; gc.height = 64;
+  const gctx = gc.getContext('2d');
+  const grassGrad = gctx.createLinearGradient(0, 0, 64, 64);
+  grassGrad.addColorStop(0, '#4a8c2a');
+  grassGrad.addColorStop(0.5, '#5a9e35');
+  grassGrad.addColorStop(1, '#4a8c2a');
+  gctx.fillStyle = grassGrad;
+  gctx.fillRect(0, 0, 64, 64);
+  const rng = seededRandom(42);
+  // Grass blades
+  for (let i = 0; i < 80; i++) {
+    const x = rng() * 64, y = rng() * 64;
+    const shade = 30 + rng() * 50;
+    gctx.strokeStyle = `rgba(${shade},${80+rng()*60},${shade*0.4},0.4)`;
+    gctx.lineWidth = 0.5 + rng();
+    gctx.beginPath();
+    gctx.moveTo(x, y);
+    gctx.lineTo(x + (rng()-0.5)*4, y - 2 - rng()*4);
+    gctx.stroke();
+  }
+  // Subtle dots for texture
+  for (let i = 0; i < 40; i++) {
+    gctx.fillStyle = `rgba(${60+rng()*40},${100+rng()*60},${20+rng()*30},0.3)`;
+    gctx.beginPath();
+    gctx.arc(rng()*64, rng()*64, 0.5+rng()*1.5, 0, Math.PI*2);
+    gctx.fill();
+  }
+  grassPattern = gc;
+
+  // City bricks
+  const cc = document.createElement('canvas');
+  cc.width = 64; cc.height = 64;
+  const cctx = cc.getContext('2d');
+  cctx.fillStyle = '#8a6a28';
+  cctx.fillRect(0, 0, 64, 64);
+  const rng2 = seededRandom(123);
+  // Brick pattern
+  for (let row = 0; row < 8; row++) {
+    const offsetX = (row % 2) * 8;
+    for (let col = -1; col < 5; col++) {
+      const bx = col * 16 + offsetX;
+      const by = row * 8;
+      const r = 120 + rng2() * 40;
+      const g = 85 + rng2() * 30;
+      const b = 20 + rng2() * 20;
+      cctx.fillStyle = `rgb(${r},${g},${b})`;
+      cctx.fillRect(bx + 0.5, by + 0.5, 15, 7);
+      cctx.strokeStyle = `rgba(60,40,15,0.5)`;
+      cctx.lineWidth = 0.5;
+      cctx.strokeRect(bx + 0.5, by + 0.5, 15, 7);
+    }
+  }
+  cityPattern = cc;
+}
+generatePatterns();
+
+function edgeMidpoint(edge, s) {
+  if (edge === 0) return { x: s/2, y: 0 };
+  if (edge === 1) return { x: s, y: s/2 };
+  if (edge === 2) return { x: s/2, y: s };
+  return { x: 0, y: s/2 };
+}
+
+function fillWithPattern(ctx, patternCanvas, s) {
+  const pat = ctx.createPattern(patternCanvas, 'repeat');
+  ctx.fillStyle = pat;
+  ctx.fill();
+}
+
+function drawFieldBackground(ctx, s) {
+  // Base gradient
+  const grad = ctx.createRadialGradient(s/2, s/2, 0, s/2, s/2, s*0.8);
+  grad.addColorStop(0, '#5da832');
+  grad.addColorStop(1, '#4a8c2a');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, s, s);
+
+  // Overlay texture pattern
+  ctx.save();
+  ctx.globalAlpha = 0.6;
+  const pat = ctx.createPattern(grassPattern, 'repeat');
+  ctx.fillStyle = pat;
+  ctx.fillRect(0, 0, s, s);
+  ctx.restore();
+
+  // Subtle vignette
+  const vig = ctx.createRadialGradient(s/2, s/2, s*0.2, s/2, s/2, s*0.75);
+  vig.addColorStop(0, 'rgba(100,180,50,0.08)');
+  vig.addColorStop(1, 'rgba(30,60,10,0.12)');
+  ctx.fillStyle = vig;
+  ctx.fillRect(0, 0, s, s);
+}
+
+function fillCityShape(ctx, s) {
+  // Gradient base
+  const grad = ctx.createLinearGradient(0, 0, s, s);
+  grad.addColorStop(0, '#b8862a');
+  grad.addColorStop(0.3, '#a07525');
+  grad.addColorStop(0.7, '#c49430');
+  grad.addColorStop(1, '#9a6b20');
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Brick texture overlay
+  ctx.save();
+  ctx.globalAlpha = 0.45;
+  ctx.clip();
+  const pat = ctx.createPattern(cityPattern, 'repeat');
+  ctx.fillStyle = pat;
+  ctx.fillRect(0, 0, s, s);
+  ctx.restore();
+}
+
+function drawCityWall(ctx, s) {
+  // Thick wall stroke with depth
+  ctx.save();
+  ctx.strokeStyle = '#4a3010';
+  ctx.lineWidth = 3.5;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+  ctx.strokeStyle = '#7a5a20';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.restore();
+}
+
+// Build city shape path for a group of edges
+// Transform a point (x,y) by rotating `times` 90-degree steps around (s/2, s/2)
+function rotPt(x, y, times, s) {
+  const cx = s / 2, cy = s / 2;
+  let rx = x - cx, ry = y - cy;
+  for (let i = 0; i < times; i++) {
+    const tmp = rx;
+    rx = -ry;
+    ry = tmp;
+  }
+  return [rx + cx, ry + cy];
+}
+
+// Draw a city path using a base shape for edge-0 (North), then rotate
+// This guarantees all rotations are perfectly symmetric.
+
+function buildCityPath(ctx, group, s) {
+  ctx.beginPath();
+
+  if (group.length === 4) {
+    ctx.rect(0, 0, s, s);
+    ctx.closePath();
+    return true;
+  }
+
+  if (group.length === 1) {
+    return false; // handled by drawSingleCityEdge
+  }
+
+  if (group.length === 2) {
+    const sorted = [...group].sort();
+    const diff = sorted[1] - sorted[0];
+    if (diff === 2) {
+      return false; // opposite edges, draw separately
+    }
+    // Adjacent corner city: figure out which corner
+    // Base shape: NW corner (edges 3,0 = W+N)
+    // We draw base NW then rotate to match actual corner.
+    // NW=edges{3,0}, rot0; NE=edges{0,1}, rot1; SE=edges{1,2}, rot2; SW=edges{2,3}, rot3
+    let rot = 0;
+    if (sorted[0]===0 && sorted[1]===1) rot = 1;
+    else if (sorted[0]===1 && sorted[1]===2) rot = 2;
+    else if (sorted[0]===2 && sorted[1]===3) rot = 3;
+    else rot = 0; // {0,3} = NW
+
+    // Base NW shape: covers top edge and left edge, curves from bottom-left to top-right
+    const pts = [
+      [s, 0],          // top-right corner
+      [0, 0],          // top-left corner (N edge)
+      [0, s],          // bottom-left corner (W edge)
+    ];
+    // Inner curve from bottom-left to top-right
+    const curve1 = { cp1: [s*0.12, s*0.62], cp2: [s*0.30, s*0.40], end: [s*0.35, s*0.35] };
+    const curve2 = { cp1: [s*0.40, s*0.30], cp2: [s*0.62, s*0.12], end: [s, 0] };
+
+    const rp = (x, y) => rotPt(x, y, rot, s);
+    ctx.moveTo(...rp(...pts[0]));
+    ctx.lineTo(...rp(...pts[1]));
+    ctx.lineTo(...rp(...pts[2]));
+    ctx.bezierCurveTo(
+      ...rp(...curve1.cp1), ...rp(...curve1.cp2), ...rp(...curve1.end)
+    );
+    ctx.bezierCurveTo(
+      ...rp(...curve2.cp1), ...rp(...curve2.cp2), ...rp(...curve2.end)
+    );
+    ctx.closePath();
+    return true;
+  }
+
+  if (group.length === 3) {
+    // 3-edge city: find the missing edge
+    const missing = [0,1,2,3].find(d => !group.includes(d));
+    // Base shape: missing=2 (South open). We rotate to match.
+    // missing=2 → rot0; missing=3 → rot1; missing=0 → rot2; missing=1 → rot3
+    const rotMap = { 2:0, 3:1, 0:2, 1:3 };
+    const rot = rotMap[missing];
+
+    // Base: city covers N, E, W edges. Open on South.
+    // Path goes around the three walled edges, then a curved inner wall at the south.
+    const inset = s * 0.30;
+    const pts = [
+      [0, s],      // bottom-left (start, open side)
+      [0, 0],      // top-left
+      [s, 0],      // top-right
+      [s, s],      // bottom-right
+    ];
+    // Curved inner wall across the open (south) side
+    const wallR = [s*0.75, s-inset];
+    const cpR = [s*0.62, s-inset-s*0.08];
+    const cpL = [s*0.38, s-inset-s*0.08];
+    const wallL = [s*0.25, s-inset];
+
+    const rp = (x, y) => rotPt(x, y, rot, s);
+    ctx.moveTo(...rp(...pts[0]));
+    ctx.lineTo(...rp(...pts[1]));
+    ctx.lineTo(...rp(...pts[2]));
+    ctx.lineTo(...rp(...pts[3]));
+    ctx.lineTo(...rp(...wallR));
+    ctx.bezierCurveTo(...rp(...cpR), ...rp(...cpL), ...rp(...wallL));
+    ctx.lineTo(...rp(...pts[0]));
+    ctx.closePath();
+    return true;
+  }
+
+  return false;
+}
+
+function drawSingleCityEdge(ctx, edge, s) {
+  // Base shape: city on North (edge 0). Rotate for other edges.
+  const rot = edge; // edge 0→rot0, 1→rot1, 2→rot2, 3→rot3
+  const depth = s * 0.34;
+  const rp = (x, y) => rotPt(x, y, rot, s);
+
+  // Base North city: triangle from top-left to top-right, curving inward
+  ctx.beginPath();
+  ctx.moveTo(...rp(0, 0));
+  ctx.lineTo(...rp(s, 0));
+  ctx.lineTo(...rp(s*0.78, depth*0.7));
+  ctx.bezierCurveTo(
+    ...rp(s*0.65, depth*1.05),
+    ...rp(s*0.35, depth*1.05),
+    ...rp(s*0.22, depth*0.7)
+  );
+  ctx.closePath();
+}
+
+// Draw a city band connecting two opposite edges (e.g. tiles F, G)
+function drawOppositeCityBand(ctx, sorted, s) {
+  // Base: N-S band (edges 0 and 2). Rotate for E-W (edges 1 and 3).
+  const isEW = (sorted[0] === 1 && sorted[1] === 3);
+  const rot = isEW ? 1 : 0;
+  const rp = (x, y) => rotPt(x, y, rot, s);
+  const w = s * 0.34; // half-width of the band
+
+  ctx.beginPath();
+  // Top edge (full width)
+  ctx.moveTo(...rp(0, 0));
+  ctx.lineTo(...rp(s, 0));
+  // Right inner wall curves down
+  ctx.lineTo(...rp(s*0.78, w*0.7));
+  ctx.bezierCurveTo(
+    ...rp(s*0.65, w*1.05),
+    ...rp(s*0.65, s - w*1.05),
+    ...rp(s*0.78, s - w*0.7)
+  );
+  // Bottom edge (full width)
+  ctx.lineTo(...rp(s, s));
+  ctx.lineTo(...rp(0, s));
+  // Left inner wall curves up
+  ctx.lineTo(...rp(s*0.22, s - w*0.7));
+  ctx.bezierCurveTo(
+    ...rp(s*0.35, s - w*1.05),
+    ...rp(s*0.35, w*1.05),
+    ...rp(s*0.22, w*0.7)
+  );
+  ctx.closePath();
+}
+
+function drawRoadSegment(ctx, p1, p2, s) {
+  const roadW = s * 0.13;
+  // Compute control point curving through center
+  const cx = (p1.x + p2.x) / 2 + (s/2 - (p1.x + p2.x)/2) * 0.35;
+  const cy = (p1.y + p2.y) / 2 + (s/2 - (p1.y + p2.y)/2) * 0.35;
+
+  ctx.lineCap = 'butt';
+  ctx.lineJoin = 'round';
+
+  // Shadow
+  ctx.save();
+  ctx.strokeStyle = 'rgba(30,20,5,0.35)';
+  ctx.lineWidth = roadW + 5;
+  ctx.beginPath();
+  ctx.moveTo(p1.x, p1.y);
+  ctx.quadraticCurveTo(cx, cy, p2.x, p2.y);
+  ctx.stroke();
+  ctx.restore();
+
+  // Dark border
+  ctx.strokeStyle = '#5a4020';
+  ctx.lineWidth = roadW + 2;
+  ctx.beginPath();
+  ctx.moveTo(p1.x, p1.y);
+  ctx.quadraticCurveTo(cx, cy, p2.x, p2.y);
+  ctx.stroke();
+
+  // Main road surface - sandy gradient along path
+  const roadGrad = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
+  roadGrad.addColorStop(0, '#d4b87a');
+  roadGrad.addColorStop(0.3, '#e0c890');
+  roadGrad.addColorStop(0.7, '#d0b475');
+  roadGrad.addColorStop(1, '#d8bc80');
+  ctx.strokeStyle = roadGrad;
+  ctx.lineWidth = roadW - 2;
+  ctx.beginPath();
+  ctx.moveTo(p1.x, p1.y);
+  ctx.quadraticCurveTo(cx, cy, p2.x, p2.y);
+  ctx.stroke();
+
+  // Center line highlight
+  ctx.strokeStyle = 'rgba(255,240,200,0.25)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([3, 4]);
+  ctx.beginPath();
+  ctx.moveTo(p1.x, p1.y);
+  ctx.quadraticCurveTo(cx, cy, p2.x, p2.y);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function drawMonastery(ctx, s) {
+  const cx = s/2, cy = s/2;
+  const w = s * 0.28, h = s * 0.32;
+
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  roundRect(ctx, cx-w/2+3, cy-h/2+8, w, h, 2);
+  ctx.fill();
+
+  // Building walls
+  const wallGrad = ctx.createLinearGradient(cx-w/2, cy-h/2, cx+w/2, cy+h/2);
+  wallGrad.addColorStop(0, '#e8d8b8');
+  wallGrad.addColorStop(0.5, '#dcc8a0');
+  wallGrad.addColorStop(1, '#c8b490');
+  ctx.fillStyle = wallGrad;
+  roundRect(ctx, cx-w/2, cy-h/2+4, w, h-4, 2);
+  ctx.fill();
+  ctx.strokeStyle = '#8a7050';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Window
+  ctx.fillStyle = '#4a6080';
+  ctx.fillRect(cx-3, cy+2, 6, 8);
+  ctx.strokeStyle = '#8a7050';
+  ctx.lineWidth = 0.8;
+  ctx.strokeRect(cx-3, cy+2, 6, 8);
+
+  // Door
+  ctx.fillStyle = '#6a4a30';
+  roundRect(ctx, cx-4, cy+h/2-10, 8, 10, 1);
+  ctx.fill();
+
+  // Roof
+  const roofH = s * 0.2;
+  ctx.beginPath();
+  ctx.moveTo(cx - w/2 - 4, cy - h/2 + 5);
+  ctx.lineTo(cx, cy - h/2 - roofH + 2);
+  ctx.lineTo(cx + w/2 + 4, cy - h/2 + 5);
+  ctx.closePath();
+  const roofGrad = ctx.createLinearGradient(cx-w/2, cy-h/2-roofH, cx+w/2, cy-h/2+5);
+  roofGrad.addColorStop(0, '#8b3a1a');
+  roofGrad.addColorStop(0.5, '#a04520');
+  roofGrad.addColorStop(1, '#7a3015');
+  ctx.fillStyle = roofGrad;
+  ctx.fill();
+  ctx.strokeStyle = '#5a2010';
+  ctx.lineWidth = 1.2;
+  ctx.stroke();
+
+  // Cross on top
+  ctx.strokeStyle = '#ffd700';
+  ctx.lineWidth = 2;
+  ctx.lineCap = 'round';
+  const crossTop = cy - h/2 - roofH - 4;
+  ctx.beginPath();
+  ctx.moveTo(cx, crossTop);
+  ctx.lineTo(cx, crossTop + 10);
+  ctx.moveTo(cx - 4, crossTop + 3);
+  ctx.lineTo(cx + 4, crossTop + 3);
+  ctx.stroke();
+  ctx.lineCap = 'butt';
+}
+
+function drawPennant(ctx, s, centerX, centerY) {
+  const px = centerX || s/2;
+  const py = centerY || s/2;
+  const pw = s * 0.1, ph = s * 0.13;
+
+  // Shield with gradient
+  ctx.beginPath();
+  ctx.moveTo(px - pw, py - ph);
+  ctx.lineTo(px + pw, py - ph);
+  ctx.lineTo(px + pw, py + ph*0.2);
+  ctx.quadraticCurveTo(px + pw*0.5, py + ph*0.8, px, py + ph);
+  ctx.quadraticCurveTo(px - pw*0.5, py + ph*0.8, px - pw, py + ph*0.2);
+  ctx.closePath();
+
+  const shieldGrad = ctx.createLinearGradient(px-pw, py-ph, px+pw, py+ph);
+  shieldGrad.addColorStop(0, '#2050a0');
+  shieldGrad.addColorStop(0.5, '#1840a0');
+  shieldGrad.addColorStop(1, '#153580');
+  ctx.fillStyle = shieldGrad;
+  ctx.fill();
+  ctx.strokeStyle = '#ffd700';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Inner decoration - small fleur
+  ctx.fillStyle = '#ffd700';
+  ctx.beginPath();
+  ctx.arc(px, py - ph*0.15, pw*0.3, 0, Math.PI*2);
+  ctx.fill();
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.lineTo(x+w-r, y);
+  ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+  ctx.lineTo(x+w, y+h-r);
+  ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+  ctx.lineTo(x+r, y+h);
+  ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+  ctx.lineTo(x, y+r);
+  ctx.quadraticCurveTo(x, y, x+r, y);
+  ctx.closePath();
+}
+
+// Compute pennant position for a city group
+function getPennantPos(group, s) {
+  if (group.length === 4) return { x: s/2, y: s/2 };
+  if (group.length === 3) {
+    const missing = [0,1,2,3].find(d => !group.includes(d));
+    const offsets = { 0: {x:s/2,y:s*0.65}, 1: {x:s*0.35,y:s/2}, 2: {x:s/2,y:s*0.35}, 3: {x:s*0.65,y:s/2} };
+    return offsets[missing];
+  }
+  if (group.length === 2) {
+    let ax = 0, ay = 0;
+    for (const e of group) { const m = edgeMidpoint(e, s); ax += m.x; ay += m.y; }
+    return { x: ax/2*0.6 + s*0.2, y: ay/2*0.6 + s*0.2 };
+  }
+  const m = edgeMidpoint(group[0], s);
+  return { x: m.x*0.6 + s*0.2, y: m.y*0.6 + s*0.2 };
+}
+
+function renderTile(canvas, tile, rotation, size) {
+  const ctx = canvas.getContext('2d');
+  const s = size || canvas.width;
+  ctx.clearRect(0, 0, s, s);
+
+  // 1) Field background with texture
+  drawFieldBackground(ctx, s);
+
+  // 2) Draw cities
+  const cityGroups = getRotatedCities(tile, rotation);
+  for (const group of cityGroups) {
+    ctx.save();
+    if (group.length === 2) {
+      const sorted = [...group].sort();
+      const diff = sorted[1] - sorted[0];
+      if (diff === 2) {
+        // Opposite edges connected: draw as a band across the tile
+        ctx.save();
+        drawOppositeCityBand(ctx, sorted, s);
+        fillCityShape(ctx, s);
+        drawCityWall(ctx, s);
+        ctx.restore();
+        ctx.restore();
+        continue;
+      }
+    }
+    if (group.length === 1) {
+      ctx.save();
+      drawSingleCityEdge(ctx, group[0], s);
+      fillCityShape(ctx, s);
+      drawCityWall(ctx, s);
+      ctx.restore();
+    } else {
+      const built = buildCityPath(ctx, group, s);
+      if (built) {
+        fillCityShape(ctx, s);
+        drawCityWall(ctx, s);
+      }
+    }
+    ctx.restore();
+  }
+
+  // 3) Draw roads
+  const roadGroups = getRotatedRoads(tile, rotation);
+  for (const group of roadGroups) {
+    if (group.length === 2) {
+      const p1 = edgeMidpoint(group[0], s);
+      const p2 = edgeMidpoint(group[1], s);
+      drawRoadSegment(ctx, p1, p2, s);
+    } else if (group.length === 1) {
+      const p1 = edgeMidpoint(group[0], s);
+      drawRoadSegment(ctx, p1, { x: s/2, y: s/2 }, s);
+    }
+  }
+
+  // 4) Draw monastery
+  if (tile.monastery) {
+    drawMonastery(ctx, s);
+  }
+
+  // 5) Draw pennant
+  if (tile.pennant && !tile.monastery) {
+    const mainGroup = cityGroups[0];
+    if (mainGroup) {
+      const pp = getPennantPos(mainGroup, s);
+      drawPennant(ctx, s, pp.x, pp.y);
+    }
+  }
+
+  // 6) Border with slight inset shadow
+  ctx.strokeStyle = 'rgba(20,12,4,0.7)';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(0.5, 0.5, s-1, s-1);
+  ctx.strokeStyle = 'rgba(255,240,200,0.08)';
+  ctx.lineWidth = 0.5;
+  ctx.strokeRect(1.5, 1.5, s-3, s-3);
+}
+
+function drawCurrentTile() {
+  if (!currentTile) return;
+  const canvas = document.getElementById('tilePreview');
+  renderTile(canvas, currentTile, currentRotation, 70);
+}
+
+// ============================================================
+// BOARD RENDERING
+// ============================================================
+function updateBoard() {
+  const boardEl = document.getElementById('board');
+
+  // Clear old valid slots and meeple spots
+  boardEl.querySelectorAll('.valid-slot, .meeple-spot').forEach(el => el.remove());
+
+  // Render placed tiles
+  for (const key of Object.keys(board)) {
+    const [x, y] = key.split(',').map(Number);
+    let tileEl = document.getElementById(`tile-${key}`);
+    if (!tileEl) {
+      tileEl = document.createElement('div');
+      tileEl.id = `tile-${key}`;
+      tileEl.className = 'tile-slot';
+      const canvas = document.createElement('canvas');
+      canvas.width = TILE_SIZE;
+      canvas.height = TILE_SIZE;
+      tileEl.appendChild(canvas);
+      boardEl.appendChild(tileEl);
+    }
+    tileEl.style.left = (x * TILE_SIZE) + 'px';
+    tileEl.style.top = (y * TILE_SIZE) + 'px';
+    renderTile(tileEl.querySelector('canvas'), board[key].tile, board[key].rotation, TILE_SIZE);
+
+    // Render meeples on this tile
+    tileEl.querySelectorAll('.meeple-marker').forEach(el => el.remove());
+    if (board[key].meeples) {
+      for (const m of board[key].meeples) {
+        const color = COLORS.player[m.player];
+        const marker = document.createElement('div');
+        marker.className = 'meeple-marker';
+        marker.innerHTML = `<svg viewBox="0 0 22 26" width="22" height="26"><path d="M11 0 C13 0 15 2 15 4.5 C15 6.5 13.5 8 12 8.5 L14.5 11 L18 10 C20 9.5 22 11 22 13 C22 15 20 16.5 18 16 L14 15 L15 22 C15.5 24 14 26 12 26 L10 26 C8 26 6.5 24 7 22 L8 15 L4 16 C2 16.5 0 15 0 13 C0 11 2 9.5 4 10 L7.5 11 L10 8.5 C8.5 8 7 6.5 7 4.5 C7 2 9 0 11 0 Z" fill="${color}" stroke="#fff" stroke-width="1.2"/></svg>`;
+        marker.style.left = m.px + 'px';
+        marker.style.top = m.py + 'px';
+        tileEl.appendChild(marker);
+      }
+    }
+  }
+
+  // Show valid positions if in placeTile phase
+  if (phase === 'placeTile' && currentTile) {
+    validPositions = getValidPositions(currentTile, currentRotation);
+    for (const pos of validPositions) {
+      const slot = document.createElement('div');
+      slot.className = 'valid-slot';
+      slot.style.left = (pos.x * TILE_SIZE) + 'px';
+      slot.style.top = (pos.y * TILE_SIZE) + 'px';
+      slot.addEventListener('click', () => placeTile(pos.x, pos.y));
+      boardEl.appendChild(slot);
+    }
+  }
+
+  // Show meeple spots if in placeMeeple phase
+  if (phase === 'placeMeeple' && placedPos) {
+    showMeepleSpots(placedPos.x, placedPos.y);
+  }
+
+  applyTransform();
+}
+
+function applyTransform() {
+  const boardEl = document.getElementById('board');
+  boardEl.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
+}
+
+// ============================================================
+// MEEPLE PLACEMENT
+// ============================================================
+function showMeepleSpots(x, y) {
+  if (players[currentPlayer].meeples <= 0) {
+    skipMeeple();
+    return;
+  }
+
+  const boardEl = document.getElementById('board');
+  const placed = board[`${x},${y}`];
+  if (!placed) return;
+
+  const spots = [];
+
+  // City spots
+  const cityGroups = getRotatedCities(placed.tile, placed.rotation);
+  for (const group of cityGroups) {
+    if (!isFeatureClaimed(CITY, x, y, group)) {
+      const pos = getMeeplePosition(CITY, group, TILE_SIZE);
+      spots.push({ type: CITY, edges: group, px: pos.x, py: pos.y });
+    }
+  }
+
+  // Road spots
+  const roadGroups = getRotatedRoads(placed.tile, placed.rotation);
+  for (const group of roadGroups) {
+    if (!isFeatureClaimed(ROAD, x, y, group)) {
+      const pos = getMeeplePosition(ROAD, group, TILE_SIZE);
+      spots.push({ type: ROAD, edges: group, px: pos.x, py: pos.y });
+    }
+  }
+
+  // Monastery spot
+  if (placed.tile.monastery) {
+    spots.push({ type: MONASTERY, edges: [], px: TILE_SIZE/2, py: TILE_SIZE/2 });
+  }
+
+  for (const spot of spots) {
+    const el = document.createElement('div');
+    el.className = 'meeple-spot';
+    const spotColor = COLORS.player[currentPlayer];
+    el.innerHTML = `<svg viewBox="0 0 22 26" width="28" height="32"><path d="M11 0 C13 0 15 2 15 4.5 C15 6.5 13.5 8 12 8.5 L14.5 11 L18 10 C20 9.5 22 11 22 13 C22 15 20 16.5 18 16 L14 15 L15 22 C15.5 24 14 26 12 26 L10 26 C8 26 6.5 24 7 22 L8 15 L4 16 C2 16.5 0 15 0 13 C0 11 2 9.5 4 10 L7.5 11 L10 8.5 C8.5 8 7 6.5 7 4.5 C7 2 9 0 11 0 Z" fill="${spotColor}" fill-opacity="0.4" stroke="#ffd700" stroke-width="1.5" stroke-dasharray="3,2"/></svg>`;
+    el.title = `Place meeple on ${spot.type}`;
+    el.style.left = (x * TILE_SIZE + spot.px) + 'px';
+    el.style.top = (y * TILE_SIZE + spot.py) + 'px';
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      placeMeeple(x, y, spot);
+    });
+    boardEl.appendChild(el);
+  }
+
+  if (spots.length === 0) {
+    // No available spots
+    skipMeeple();
+  }
+}
+
+function getMeeplePosition(type, edges, s) {
+  const mid = s / 2;
+  if (type === MONASTERY) return { x: mid, y: mid };
+  if (edges.length === 0) return { x: mid, y: mid };
+
+  // Average the edge midpoints
+  let ax = 0, ay = 0;
+  for (const edge of edges) {
+    const mp = edgeMidpoint(edge, s);
+    ax += mp.x;
+    ay += mp.y;
+  }
+  ax /= edges.length;
+  ay /= edges.length;
+
+  // For single edge: pull halfway toward center
+  if (edges.length === 1) {
+    const pull = type === CITY ? 0.55 : 0.4;
+    return { x: ax + (mid - ax) * pull, y: ay + (mid - ay) * pull };
+  }
+
+  // For two opposite edges (avg is center): offset to distinguish from monastery
+  if (edges.length === 2) {
+    const sorted = [...edges].sort();
+    if (sorted[1] - sorted[0] === 2) {
+      // Opposite edges - place slightly off center
+      if (sorted[0] === 0) return { x: mid, y: mid - s*0.12 }; // N-S → shift up
+      return { x: mid - s*0.12, y: mid }; // E-W → shift left
+    }
+  }
+
+  // For adjacent multi-edge cities: pull toward the city area
+  const pull = type === CITY ? 0.45 : 0.4;
+  let px = ax + (mid - ax) * pull;
+  let py = ay + (mid - ay) * pull;
+
+  // For 3-edge cities, push more into the city bulk
+  if (edges.length === 3 && type === CITY) {
+    const missing = [0,1,2,3].find(d => !edges.includes(d));
+    const mp = edgeMidpoint(missing, s);
+    // Move away from the open side
+    px = mid + (mid - mp.x) * 0.25;
+    py = mid + (mid - mp.y) * 0.25;
+  }
+
+  // For full city (4 edges)
+  if (edges.length === 4) {
+    return { x: mid, y: mid };
+  }
+
+  return { x: px, y: py };
+}
+
+function placeMeeple(x, y, spot) {
+  const placed = board[`${x},${y}`];
+  if (!placed) return;
+
+  const meeple = {
+    player: currentPlayer,
+    x, y,
+    featureType: spot.type,
+    featureEdges: [...spot.edges],
+    px: spot.px,
+    py: spot.py,
+  };
+  placed.meeples.push(meeple);
+  players[currentPlayer].meeples--;
+
+  // Score completed features
+  const scored = scoreCompletedFeatures(x, y);
+  if (scored && scored.length > 0) {
+    const msgs = scored.map(s => `${s.type}: +${s.points}`);
+    showStatus(`Scored: ${msgs.join(', ')}`);
+  }
+
+  endTurn();
+}
+
+function skipMeeple() {
+  if (placedPos) {
+    const scored = scoreCompletedFeatures(placedPos.x, placedPos.y);
+    if (scored && scored.length > 0) {
+      const msgs = scored.map(s => `${s.type}: +${s.points}`);
+      showStatus(`Scored: ${msgs.join(', ')}`);
+    }
+  }
+  endTurn();
+}
+
+// ============================================================
+// GAME FLOW
+// ============================================================
+function placeTile(x, y) {
+  if (phase !== 'placeTile' || !currentTile) return;
+
+  board[`${x},${y}`] = {
+    tile: currentTile,
+    rotation: currentRotation,
+    meeples: [],
+  };
+
+  placedPos = { x, y };
+  phase = 'placeMeeple';
+  document.getElementById('skipMeepleBtn').style.display = 'inline-block';
+  document.getElementById('rotateBtn').style.display = 'none';
+
+  showStatus(`${playerNames[currentPlayer]}: Place a meeple or skip`);
+  updateBoard();
+  updateUI();
+}
+
+function endTurn() {
+  document.getElementById('skipMeepleBtn').style.display = 'none';
+  document.getElementById('rotateBtn').style.display = 'inline-block';
+
+  // Switch player
+  currentPlayer = 1 - currentPlayer;
+
+  // Draw next tile
+  currentTile = drawFromDeck();
+  currentRotation = 0;
+
+  if (!currentTile) {
+    // Game over
+    endGameScoring();
+    phase = 'gameOver';
+    showGameOver();
+    updateUI();
+    updateBoard();
+    return;
+  }
+
+  phase = 'placeTile';
+  placedPos = null;
+  drawCurrentTile();
+  updateBoard();
+  updateUI();
+  showStatus(`${playerNames[currentPlayer]}: Place your tile`);
+}
+
+function showGameOver() {
+  const overlay = document.getElementById('gameOverlay');
+  overlay.classList.add('show');
+  const scores = document.getElementById('finalScores');
+  const winner = players[0].score > players[1].score ? `${playerNames[0]} wins!` :
+                 players[1].score > players[0].score ? `${playerNames[1]} wins!` : "It's a tie!";
+  scores.innerHTML = `
+    <div class="p1-color">${playerNames[0]}: ${players[0].score} points</div>
+    <div class="p2-color">${playerNames[1]}: ${players[1].score} points</div>
+    <div style="margin-top:12px;font-size:22px;color:#ffd700;">${winner}</div>
+  `;
+}
+
+// ============================================================
+// UI UPDATES
+// ============================================================
+function updateUI() {
+  document.getElementById('p1Score').textContent = players[0].score;
+  document.getElementById('p2Score').textContent = players[1].score;
+  document.getElementById('p1Meeples').textContent = players[0].meeples;
+  document.getElementById('p2Meeples').textContent = players[1].meeples;
+  document.getElementById('tilesLeft').textContent = deck.length;
+
+  document.getElementById('player1Info').classList.toggle('active', currentPlayer === 0);
+  document.getElementById('player2Info').classList.toggle('active', currentPlayer === 1);
+
+  drawCurrentTile();
+}
+
+function showStatus(msg) {
+  const el = document.getElementById('statusMsg');
+  el.textContent = msg;
+  el.style.opacity = 1;
+}
+
+// ============================================================
+// RULES PANEL TILE RENDERING
+// ============================================================
+let rulesTilesRendered = false;
+function renderRulesTiles() {
+  if (rulesTilesRendered) return;
+  rulesTilesRendered = true;
+
+  // Find example tiles from definitions
+  const tileDef = (id) => TILE_DEFS.find(t => t.id === id);
+
+  // Cities: E (single city edge), M (corner city with pennant)
+  renderTile(document.getElementById('rulesTileCity1'), tileDef('E'), 0, 56);
+  renderTile(document.getElementById('rulesTileCity2'), tileDef('R'), 0, 56);
+
+  // Roads: U (straight road), V (curved road)
+  renderTile(document.getElementById('rulesTileRoad1'), tileDef('U'), 0, 56);
+  renderTile(document.getElementById('rulesTileRoad2'), tileDef('V'), 0, 56);
+
+  // Monasteries: B (monastery no road), A (monastery with road)
+  renderTile(document.getElementById('rulesTileMon1'), tileDef('B'), 0, 56);
+  renderTile(document.getElementById('rulesTileMon2'), tileDef('A'), 0, 56);
+
+  // Pennant: F (connected city with pennant)
+  renderTile(document.getElementById('rulesTilePennant'), tileDef('F'), 0, 56);
+}
+
+// ============================================================
+// EVENT HANDLING
+// ============================================================
+function setupEvents() {
+  const container = document.getElementById('boardContainer');
+
+  // Pan
+  container.addEventListener('mousedown', (e) => {
+    if (e.target.classList.contains('valid-slot') || e.target.classList.contains('meeple-spot')) return;
+    isPanning = true;
+    panStartX = e.clientX;
+    panStartY = e.clientY;
+    panStartPanX = panX;
+    panStartPanY = panY;
+    container.classList.add('dragging');
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (!isPanning) return;
+    panX = panStartPanX + (e.clientX - panStartX);
+    panY = panStartPanY + (e.clientY - panStartY);
+    applyTransform();
+  });
+  window.addEventListener('mouseup', () => {
+    isPanning = false;
+    container.classList.remove('dragging');
+  });
+
+  // Zoom
+  container.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const rect = container.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+
+    const oldZoom = zoom;
+    zoom *= e.deltaY < 0 ? 1.1 : 0.9;
+    zoom = Math.max(0.2, Math.min(3, zoom));
+
+    // Zoom toward mouse
+    panX = mx - (mx - panX) * (zoom / oldZoom);
+    panY = my - (my - panY) * (zoom / oldZoom);
+
+    applyTransform();
+  });
+
+  // Rotate
+  document.getElementById('rotateBtn').addEventListener('click', rotateTile);
+  document.getElementById('tilePreview').addEventListener('click', rotateTile);
+  document.getElementById('skipMeepleBtn').addEventListener('click', skipMeeple);
+
+  // Keyboard
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'r' || e.key === 'R') rotateTile();
+    if (e.key === 'Escape' && phase === 'placeMeeple') skipMeeple();
+  });
+
+  // Rules panel
+  document.getElementById('rulesBtn').addEventListener('click', () => {
+    document.getElementById('rulesOverlay').classList.add('show');
+    renderRulesTiles();
+  });
+  document.getElementById('rulesCloseBtn').addEventListener('click', () => {
+    document.getElementById('rulesOverlay').classList.remove('show');
+  });
+  document.getElementById('rulesOverlay').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) e.currentTarget.classList.remove('show');
+  });
+
+  // Zoom buttons
+  document.getElementById('zoomIn').addEventListener('click', () => {
+    zoom = Math.min(3, zoom * 1.2);
+    applyTransform();
+  });
+  document.getElementById('zoomOut').addEventListener('click', () => {
+    zoom = Math.max(0.2, zoom / 1.2);
+    applyTransform();
+  });
+  document.getElementById('zoomReset').addEventListener('click', () => {
+    zoom = 1;
+    const container = document.getElementById('boardContainer');
+    panX = container.clientWidth / 2 - TILE_SIZE / 2;
+    panY = container.clientHeight / 2 - TILE_SIZE / 2;
+    applyTransform();
+  });
+}
+
+function rotateTile() {
+  if (phase !== 'placeTile' || !currentTile) return;
+  currentRotation = (currentRotation + 1) % 4;
+  drawCurrentTile();
+  updateBoard();
+}
+
+// ============================================================
+// START
+// ============================================================
+document.getElementById('startBtn').addEventListener('click', startGame);
+document.getElementById('name1').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('name2').focus();
+});
+document.getElementById('name2').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') startGame();
+});
+</script>
+</body>
+</html>
