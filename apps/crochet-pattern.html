@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crochet Pattern Designer</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #faf8f5;
+  color: #2c2c2c;
+  min-height: 100vh;
+}
+
+header {
+  background: #1b4332;
+  color: white;
+  padding: 0 24px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.app-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-title-yarn { font-size: 1.4rem; }
+
+nav { display: flex; gap: 8px; }
+
+nav button {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.35);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+nav button:hover { background: rgba(255,255,255,0.12); }
+nav button.active { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.7); font-weight: 600; }
+
+main { max-width: 1300px; margin: 0 auto; padding: 32px 24px 60px; }
+
+.page { display: none; }
+.page.active { display: block; }
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.page-header h1 { font-size: 1.5rem; font-weight: 700; color: #1b4332; }
+
+/* Buttons */
+.btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.btn-primary { background: #2d6a4f; color: white; }
+.btn-primary:hover { background: #1b4332; }
+
+.btn-secondary { background: white; color: #2d6a4f; border: 1px solid #2d6a4f; }
+.btn-secondary:hover { background: #f0faf5; }
+
+.btn-danger { background: #dc2626; color: white; }
+.btn-danger:hover { background: #b91c1c; }
+
+.btn-sm { padding: 5px 11px; font-size: 0.8rem; }
+.btn-icon { padding: 5px 9px; font-size: 0.95rem; }
+
+.btn-group { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+/* Folder indicator */
+.folder-indicator {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 5px;
+  padding: 4px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.folder-indicator:hover { background: rgba(255,255,255,0.16); }
+.folder-indicator.has-folder { color: rgba(255,255,255,0.9); }
+
+/* Design cards */
+.designs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 16px;
+}
+
+.design-card {
+  background: white;
+  border: 1px solid #e2d9cc;
+  border-radius: 10px;
+  padding: 20px;
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+
+.design-card:hover { box-shadow: 0 4px 18px rgba(0,0,0,0.1); transform: translateY(-1px); }
+
+.design-card h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1b4332;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.design-card .meta { font-size: 0.78rem; color: #888; margin-bottom: 16px; }
+
+.design-card .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.empty-state {
+  text-align: center;
+  padding: 70px 20px;
+  color: #999;
+}
+
+.empty-state .icon { font-size: 3.5rem; margin-bottom: 18px; }
+.empty-state p { margin-bottom: 20px; font-size: 1rem; color: #777; }
+
+/* Editor toolbar */
+.editor-toolbar {
+  background: white;
+  border: 1px solid #e2d9cc;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.editor-toolbar-sep {
+  width: 1px;
+  height: 24px;
+  background: #e2d9cc;
+  flex-shrink: 0;
+}
+
+.design-name-input {
+  border: 1px solid #d4c5b0;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  flex: 1;
+  min-width: 180px;
+  max-width: 300px;
+}
+
+.design-name-input:focus {
+  outline: none;
+  border-color: #2d6a4f;
+  box-shadow: 0 0 0 2px rgba(45,106,79,0.15);
+}
+
+/* Grid */
+.grid-wrapper {
+  overflow: auto;
+  background: white;
+  border: 1px solid #e2d9cc;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.grid-table { border-collapse: collapse; table-layout: fixed; }
+
+.cell-th {
+  width: 44px;
+  min-width: 44px;
+  height: 26px;
+  background: #f5f0ea;
+  font-size: 0.68rem;
+  color: #aaa;
+  text-align: center;
+  border: 1px solid #e8dfcf;
+  font-weight: 500;
+}
+
+.corner-cell { border: none !important; background: transparent !important; width: 44px; min-width: 44px; }
+.corner-cell-narrow { border: none !important; background: transparent !important; width: 36px; min-width: 36px; }
+
+.row-label {
+  width: 38px;
+  min-width: 38px;
+  height: 44px;
+  background: #f0faf5;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #2d6a4f;
+  text-align: center;
+  vertical-align: middle;
+  border: 1px solid #c3ddd4;
+  user-select: none;
+}
+
+.row-label.editable { cursor: pointer; }
+.row-label.editable:hover { background: #d1f0e4; }
+
+.grid-cell {
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  border: 1px solid #d8cfc2;
+  text-align: center;
+  vertical-align: middle;
+  padding: 4px;
+  background: white;
+  position: relative;
+}
+
+.grid-cell.editable { cursor: pointer; transition: background 0.1s; }
+.grid-cell.editable:hover { background: #edf7f2; }
+
+.grid-cell svg { width: 34px; height: 34px; display: block; margin: auto; color: #1b4332; }
+
+/* Alternating row backgrounds */
+.grid-table tbody tr:nth-child(odd)  .grid-cell  { background: #ffffff; }
+.grid-table tbody tr:nth-child(even) .grid-cell  { background: #f5f0e8; }
+.grid-table tbody tr:nth-child(odd)  .row-label  { background: #f0faf5; }
+.grid-table tbody tr:nth-child(even) .row-label  { background: #e4f2ea; }
+.grid-cell.editable:hover            { background: #edf7f2 !important; }
+
+/* Multi-select */
+.grid-cell.multi-selected            { background: #dbeafe !important; outline: 2px solid #3b82f6; outline-offset: -2px; z-index: 1; position: relative; }
+.grid-cell.multi-selected:hover      { background: #bfdbfe !important; }
+
+/* Select-mode active button state */
+.btn-select-active { background: #1d4ed8 !important; color: white !important; border-color: #1d4ed8 !important; }
+
+/* Highlighted row */
+.grid-row-highlighted .grid-cell                 { background: #fffde7 !important; }
+.grid-row-highlighted .row-label                 { background: #fff8c4 !important; }
+.grid-row-highlighted .grid-cell.editable:hover  { background: #fff3b0 !important; }
+
+/* Highlight toggle button */
+.hl-btn-cell {
+  width: 24px;
+  min-width: 24px;
+  border: none !important;
+  background: transparent !important;
+  padding: 0;
+  text-align: center;
+  vertical-align: middle;
+}
+.hl-btn {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  background: transparent;
+  cursor: pointer;
+  display: block;
+  margin: auto;
+  transition: all 0.15s;
+  padding: 0;
+  flex-shrink: 0;
+}
+.hl-btn:hover  { border-color: #f59e0b; background: rgba(245,158,11,0.18); }
+.hl-btn.active { background: #f59e0b; border-color: #d97706; box-shadow: 0 0 0 2px rgba(245,158,11,0.25); }
+
+/* Legend */
+.stitch-legend {
+  margin-top: 20px;
+  background: white;
+  border: 1px solid #e2d9cc;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.stitch-legend h3 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1b4332;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.legend-grid { display: flex; flex-wrap: wrap; gap: 14px; }
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #555;
+  background: #f9f6f2;
+  border: 1px solid #e8dfcf;
+  border-radius: 6px;
+  padding: 4px 10px 4px 6px;
+}
+
+.legend-item svg { width: 28px; height: 28px; color: #1b4332; }
+
+/* Stitch picker */
+.picker-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(0,0,0,0.18);
+  display: none;
+}
+
+.picker-overlay.visible { display: block; }
+
+.stitch-picker {
+  position: fixed;
+  background: white;
+  border: 1px solid #d8cfc2;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.18);
+  padding: 14px;
+  z-index: 1000;
+  width: 320px;
+  max-height: 80vh;
+  overflow-y: auto;
+  display: none;
+}
+
+.stitch-picker.visible { display: block; }
+
+.stitch-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.stitch-picker-header span { font-size: 0.875rem; font-weight: 600; color: #1b4332; }
+
+.stitch-picker-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #999;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 3px 7px;
+  border-radius: 4px;
+}
+
+.stitch-picker-close:hover { background: #f0f0f0; color: #333; }
+
+.stitch-options {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.stitch-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 7px 4px;
+  border-radius: 7px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.12s;
+}
+
+.stitch-option:hover { background: #f0faf5; border-color: #52b788; }
+.stitch-option.current { background: #d1f0e4; border-color: #2d6a4f; }
+
+.stitch-option svg { width: 36px; height: 36px; color: #1b4332; }
+
+.stitch-name {
+  font-size: 0.62rem;
+  color: #666;
+  text-align: center;
+  margin-top: 3px;
+  line-height: 1.3;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  background: #1b4332;
+  color: white;
+  padding: 11px 20px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  z-index: 9999;
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+
+.toast.show { transform: translateY(0); opacity: 1; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="app-title">
+    <span class="app-title-yarn">🧶</span>
+    Crochet Pattern Designer
+  </div>
+  <div id="folder-indicator" class="folder-indicator" title="Click to select designs folder">No folder selected</div>
+  <nav>
+    <button id="nav-designs">My Designs</button>
+    <button id="nav-new">+ New Design</button>
+  </nav>
+</header>
+
+<main>
+  <!-- MY DESIGNS PAGE -->
+  <div id="page-designs" class="page">
+    <div class="page-header">
+      <h1>My Designs</h1>
+      <div class="btn-group">
+        <button class="btn btn-secondary" id="btn-import">Import CSV</button>
+        <button class="btn btn-primary" id="btn-new-top">+ New Design</button>
+      </div>
+    </div>
+    <div id="designs-list"></div>
+  </div>
+
+  <!-- VIEW PAGE -->
+  <div id="page-view" class="page">
+    <div class="page-header">
+      <h1 id="view-title"></h1>
+      <div class="btn-group">
+        <button class="btn btn-secondary" id="btn-back-view">← Back</button>
+        <button class="btn btn-secondary btn-sm" id="btn-zoom-out-view" title="Zoom out (−)">−</button>
+        <span id="zoom-label-view" style="font-size:0.8rem;color:#555;min-width:38px;text-align:center">100%</span>
+        <button class="btn btn-secondary btn-sm" id="btn-zoom-in-view" title="Zoom in (+)">+</button>
+        <button class="btn btn-primary" id="btn-edit-view">Edit</button>
+      </div>
+    </div>
+    <div class="grid-wrapper" id="view-grid-wrapper"></div>
+    <div id="view-legend"></div>
+  </div>
+
+  <!-- EDIT PAGE -->
+  <div id="page-edit" class="page">
+    <div class="page-header">
+      <h1 id="edit-title"></h1>
+      <div class="btn-group">
+        <button class="btn btn-secondary" id="btn-cancel-edit">Cancel</button>
+        <button class="btn btn-primary" id="btn-save-edit">Save Design</button>
+      </div>
+    </div>
+    <div class="editor-toolbar">
+      <input type="text" id="design-name-input" class="design-name-input" placeholder="Design name…" />
+      <div class="editor-toolbar-sep"></div>
+      <button class="btn btn-secondary btn-sm" id="btn-add-row">+ Row</button>
+      <button class="btn btn-secondary btn-sm" id="btn-del-row">− Row</button>
+      <div class="editor-toolbar-sep"></div>
+      <button class="btn btn-secondary btn-sm" id="btn-add-col">+ Col</button>
+      <button class="btn btn-secondary btn-sm" id="btn-del-col">− Col</button>
+      <div class="editor-toolbar-sep"></div>
+      <button class="btn btn-secondary btn-sm" id="btn-select-mode">Select Cells</button>
+      <button class="btn btn-secondary btn-sm" id="btn-apply-stitch" style="display:none">Set Stitch (0)</button>
+      <div class="editor-toolbar-sep"></div>
+      <button class="btn btn-secondary btn-sm" id="btn-zoom-out-edit" title="Zoom out (−)">−</button>
+      <span id="zoom-label-edit" style="font-size:0.8rem;color:#555;min-width:38px;text-align:center">100%</span>
+      <button class="btn btn-secondary btn-sm" id="btn-zoom-in-edit" title="Zoom in (+)">+</button>
+    </div>
+    <div class="grid-wrapper" id="edit-grid-wrapper"></div>
+    <div id="edit-legend"></div>
+  </div>
+</main>
+
+<!-- Hidden CSV import input -->
+<input type="file" id="csv-import-input" accept=".csv" multiple style="display:none">
+
+<!-- Stitch Picker -->
+<div id="picker-overlay" class="picker-overlay"></div>
+<div id="stitch-picker" class="stitch-picker">
+  <div class="stitch-picker-header">
+    <span>Choose Stitch</span>
+    <button class="stitch-picker-close" id="btn-close-picker">✕</button>
+  </div>
+  <div id="stitch-options" class="stitch-options"></div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+// ─────────────────────────────────────────────
+// STITCH DICTIONARY  (id → {name, svg})
+// ─────────────────────────────────────────────
+const STITCHES = {
+  empty: {
+    name: 'Empty',
+    svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"></svg>`
+  },
+  ch: {
+    name: 'Circle',
+    svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="20" cy="20" rx="13" ry="8" fill="none" stroke="currentColor" stroke-width="2.5"/>
+    </svg>`
+  },
+  // sl: {
+  //   name: 'Slip St.',
+  //   svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  //     <circle cx="20" cy="20" r="6.5" fill="currentColor"/>
+  //   </svg>`
+  // },
+  // sc: {
+  //   name: 'Single Crochet',
+  //   svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  //     <line x1="11" y1="11" x2="29" y2="29" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  //     <line x1="29" y1="11" x2="11" y2="29" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  //   </svg>`
+  // },
+  // hdc: {
+  //   name: 'Half Double',
+  //   svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  //     <line x1="20" y1="5" x2="20" y2="35" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  //     <line x1="12" y1="22" x2="28" y2="22" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  //     <line x1="12" y1="14" x2="28" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  //   </svg>`
+  // },
+  // dc: {
+  //   name: 'Double Crochet',
+  //   svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  //     <line x1="20" y1="4" x2="20" y2="36" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  //     <line x1="12" y1="24" x2="28" y2="24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  //     <line x1="12" y1="16" x2="28" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  //   </svg>`
+  // },
+  // tr: {
+  //   name: 'Treble',
+  //   svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  //     <line x1="20" y1="3" x2="20" y2="37" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  //     <line x1="12" y1="26" x2="28" y2="26" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  //     <line x1="12" y1="19" x2="28" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  //     <line x1="12" y1="12" x2="28" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  //   </svg>`
+  // },
+  // dtr: {
+  //   name: 'Dbl Treble',
+  //   svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  //     <line x1="20" y1="2" x2="20" y2="38" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  //     <line x1="12" y1="30" x2="28" y2="30" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  //     <line x1="12" y1="23" x2="28" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  //     <line x1="12" y1="16" x2="28" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  //     <line x1="12" y1="9"  x2="28" y2="9"  stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  //   </svg>`
+  // },
+  // inc: {
+  //   name: 'Increase',
+  //   svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  //     <line x1="20" y1="7"  x2="10" y2="30" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  //     <line x1="20" y1="7"  x2="30" y2="30" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  //     <line x1="10" y1="30" x2="30" y2="30" stroke="currentColor" stroke-width="2"   stroke-linecap="round"/>
+  //   </svg>`
+  // },
+  // dec: {
+  //   name: 'Decrease',
+  //   svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  //     <line x1="10" y1="10" x2="20" y2="33" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  //     <line x1="30" y1="10" x2="20" y2="33" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  //     <line x1="10" y1="10" x2="30" y2="10" stroke="currentColor" stroke-width="2"   stroke-linecap="round"/>
+  //   </svg>`
+  // },
+  // fpdc: {
+  //   name: 'Front Post DC',
+  //   svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  //     <path d="M20 5 C 7 13, 7 27, 20 35" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  //     <line x1="13" y1="18" x2="20" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  //     <line x1="13" y1="24" x2="20" y2="24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  //   </svg>`
+  // },
+  // bpdc: {
+  //   name: 'Back Post DC',
+  //   svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  //     <path d="M20 5 C 33 13, 33 27, 20 35" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  //     <line x1="20" y1="18" x2="27" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  //     <line x1="20" y1="24" x2="27" y2="24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  //   </svg>`
+  // },
+  // magic: {
+  //   name: 'Magic Ring',
+  //   svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  //     <circle cx="20" cy="20" r="11" fill="none" stroke="currentColor" stroke-width="2.5"/>
+  //     <path d="M20 9 Q 28 14, 28 20 Q 28 26, 20 31" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3,2"/>
+  //   </svg>`
+  // },
+  vdiag: {
+    name: 'Vert + Diagonal',
+    svg: `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+      <line x1="20" y1="4" x2="20" y2="36" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="8"  y1="8" x2="32" y2="32" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>`
+  },
+};
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+let currentPage    = 'designs';
+let viewDesignName = null;
+let editDesignName = null;   // null = new design
+let editState      = null;   // {name, rows:[{direction, cells:[]}]}
+let pickerContext  = null;   // {rowIdx, colIdx}
+
+// Single-row highlight (one per container)
+const highlightedRows = { 'edit-grid-wrapper': null, 'view-grid-wrapper': null };
+
+// Multi-cell selection (edit only)
+let editSelectMode = false;
+const selectedCells = new Set(); // "r,c" keys
+
+// Grid zoom
+let gridZoom = 1.0;
+const ZOOM_MIN = 0.3, ZOOM_MAX = 3.0, ZOOM_STEP = 0.15;
+
+let dirHandle   = null;       // FileSystemDirectoryHandle
+let fileHandles = new Map();  // name (no .csv) → FileSystemFileHandle
+
+// ─────────────────────────────────────────────
+// INDEXEDDB  (persist directory handle across reloads)
+// ─────────────────────────────────────────────
+function idbOpen() {
+  return new Promise((res, rej) => {
+    const req = indexedDB.open('crochet-app', 1);
+    req.onupgradeneeded = e => e.target.result.createObjectStore('kv');
+    req.onsuccess = e => res(e.target.result);
+    req.onerror   = e => rej(e.target.error);
+  });
+}
+
+async function idbGet(key) {
+  const db = await idbOpen();
+  return new Promise((res, rej) => {
+    const tx  = db.transaction('kv', 'readonly');
+    const req = tx.objectStore('kv').get(key);
+    req.onsuccess = () => res(req.result ?? null);
+    req.onerror   = () => rej(req.error);
+  });
+}
+
+async function idbPut(key, value) {
+  const db = await idbOpen();
+  return new Promise((res, rej) => {
+    const tx = db.transaction('kv', 'readwrite');
+    tx.objectStore('kv').put(value, key);
+    tx.oncomplete = res;
+    tx.onerror    = () => rej(tx.error);
+  });
+}
+
+// ─────────────────────────────────────────────
+// FILE SYSTEM  (File System Access API)
+// ─────────────────────────────────────────────
+async function initDirHandle() {
+  try {
+    const stored = await idbGet('dir-handle');
+    if (!stored) return false;
+    let perm = await stored.queryPermission({ mode: 'readwrite' });
+    if (perm !== 'granted') perm = await stored.requestPermission({ mode: 'readwrite' });
+    if (perm !== 'granted') return false;
+    dirHandle = stored;
+    return true;
+  } catch { return false; }
+}
+
+async function selectFolder() {
+  if (!('showDirectoryPicker' in window)) {
+    alert('Your browser does not support the File System Access API.\nPlease use Chrome or Edge.');
+    return false;
+  }
+  try {
+    const handle = await window.showDirectoryPicker({ mode: 'readwrite' });
+    dirHandle = handle;
+    await idbPut('dir-handle', handle);
+    return true;
+  } catch (e) {
+    if (e.name !== 'AbortError') console.error(e);
+    return false;
+  }
+}
+
+async function refreshFileHandles() {
+  fileHandles.clear();
+  if (!dirHandle) return;
+  for await (const [fname, handle] of dirHandle.entries()) {
+    if (handle.kind === 'file' && fname.toLowerCase().endsWith('.csv')) {
+      fileHandles.set(fname.slice(0, -4), handle);
+    }
+  }
+}
+
+async function readFile(handle) {
+  const file = await handle.getFile();
+  return file.text();
+}
+
+async function writeFile(name, csvText) {
+  const fh = await dirHandle.getFileHandle(name + '.csv', { create: true });
+  const writable = await fh.createWritable();
+  await writable.write(csvText);
+  await writable.close();
+  fileHandles.set(name, fh);
+}
+
+async function deleteFile(name) {
+  await dirHandle.removeEntry(name + '.csv');
+  fileHandles.delete(name);
+}
+
+function updateFolderIndicator() {
+  const el = document.getElementById('folder-indicator');
+  if (dirHandle) {
+    el.textContent = '📁 ' + dirHandle.name;
+    el.title = 'Folder: ' + dirHandle.name + ' — click to change';
+    el.classList.add('has-folder');
+  } else {
+    el.textContent = 'No folder selected';
+    el.title = 'Click to select designs folder';
+    el.classList.remove('has-folder');
+  }
+}
+
+// ─────────────────────────────────────────────
+// CSV  serialise / parse
+// ─────────────────────────────────────────────
+function designToCSV(design) {
+  const lines = [`name,${csvEscape(design.name)}`];
+  for (const row of design.rows) {
+    const cells = row.cells.map(c => csvEscape(c || 'empty'));
+    lines.push([row.direction, ...cells].join(','));
+  }
+  return lines.join('\n');
+}
+
+function csvToDesign(text) {
+  const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim().split('\n');
+  const design = { name: 'Untitled', rows: [] };
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const parts = parseCsvLine(line);
+    if (parts[0] === 'name') { design.name = parts.slice(1).join(','); continue; }
+    if (parts[0] === 'R' || parts[0] === 'L') {
+      design.rows.push({ direction: parts[0], cells: parts.slice(1).map(c => c || 'empty') });
+    }
+  }
+  return design;
+}
+
+function csvEscape(v) {
+  if (/[,"\n]/.test(v)) return '"' + v.replace(/"/g, '""') + '"';
+  return v;
+}
+
+function parseCsvLine(line) {
+  const r = []; let cur = '', q = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (q) {
+      if (c === '"' && line[i+1] === '"') { cur += '"'; i++; }
+      else if (c === '"') { q = false; }
+      else cur += c;
+    } else {
+      if (c === '"') q = true;
+      else if (c === ',') { r.push(cur); cur = ''; }
+      else cur += c;
+    }
+  }
+  r.push(cur);
+  return r;
+}
+
+// ─────────────────────────────────────────────
+// NAVIGATION
+// ─────────────────────────────────────────────
+function navigate(page) {
+  currentPage = page;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  if (page === 'designs') {
+    document.getElementById('nav-designs').classList.add('active');
+    renderDesigns();
+  }
+  window.scrollTo(0, 0);
+}
+
+// ─────────────────────────────────────────────
+// MY DESIGNS PAGE
+// ─────────────────────────────────────────────
+async function renderDesigns() {
+  const container = document.getElementById('designs-list');
+
+  if (!dirHandle) {
+    container.innerHTML = '';
+    const state = document.createElement('div');
+    state.className = 'empty-state';
+    state.innerHTML = '<div class="icon">📁</div><p>Select the folder where your CSV designs are stored.</p>';
+    const btn = makeBtn('Select Designs Folder', 'btn-primary', async () => {
+      if (await selectFolder()) { updateFolderIndicator(); renderDesigns(); }
+    });
+    state.appendChild(btn);
+    container.appendChild(state);
+    return;
+  }
+
+  container.innerHTML = '<p style="color:#aaa;padding:16px">Loading…</p>';
+  await refreshFileHandles();
+
+  if (fileHandles.size === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">🧶</div>
+        <p>No designs yet — start your first crochet pattern!</p>
+      </div>`;
+    return;
+  }
+
+  const grid = document.createElement('div');
+  grid.className = 'designs-grid';
+
+  const sorted = [...fileHandles.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+  for (const [name, handle] of sorted) {
+    const design = csvToDesign(await readFile(handle));
+    const cols = design.rows.length > 0 ? design.rows[0].cells.length : 0;
+
+    const card = document.createElement('div');
+    card.className = 'design-card';
+
+    const h3 = document.createElement('h3');
+    h3.textContent = design.name;
+    card.appendChild(h3);
+
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.textContent = `${design.rows.length} rows × ${cols} columns · ${name}.csv`;
+    card.appendChild(meta);
+
+    const actions = document.createElement('div');
+    actions.className = 'actions';
+    actions.append(
+      makeBtn('View',   'btn-primary btn-sm',   () => viewDesign(name)),
+      makeBtn('Edit',   'btn-secondary btn-sm', () => openEdit(name)),
+      makeBtn('Delete', 'btn-danger btn-sm',    () => confirmDelete(name))
+    );
+    card.appendChild(actions);
+    grid.appendChild(card);
+  }
+
+  container.innerHTML = '';
+  container.appendChild(grid);
+}
+
+function makeBtn(label, cls, handler) {
+  const b = document.createElement('button');
+  b.className = 'btn ' + cls;
+  b.textContent = label;
+  b.addEventListener('click', handler);
+  return b;
+}
+
+// ─────────────────────────────────────────────
+// VIEW PAGE
+// ─────────────────────────────────────────────
+async function viewDesign(name) {
+  const handle = fileHandles.get(name);
+  if (!handle) return;
+  viewDesignName = name;
+  const design = csvToDesign(await readFile(handle));
+  document.getElementById('view-title').textContent = design.name;
+  renderGrid('view-grid-wrapper', design, false);
+  renderLegend('view-legend', design);
+  navigate('view');
+}
+
+// ─────────────────────────────────────────────
+// EDIT PAGE
+// ─────────────────────────────────────────────
+async function openEdit(name) {
+  const handle = fileHandles.get(name);
+  if (!handle) return;
+  resetEditSelection();
+  editDesignName = name;
+  editState = csvToDesign(await readFile(handle));
+  document.getElementById('edit-title').textContent = 'Edit Design';
+  document.getElementById('design-name-input').value = editState.name;
+  renderGrid('edit-grid-wrapper', editState, true);
+  renderLegend('edit-legend', editState);
+  navigate('edit');
+}
+
+function resetEditSelection() {
+  editSelectMode = false;
+  clearSelection();
+  highlightedRows['edit-grid-wrapper'] = null;
+  const btn = document.getElementById('btn-select-mode');
+  if (btn) { btn.classList.remove('btn-select-active'); btn.textContent = 'Select Cells'; }
+}
+
+function startNew() {
+  if (!dirHandle) {
+    alert('Please select a designs folder first.');
+    navigate('designs');
+    return;
+  }
+  resetEditSelection();
+  editDesignName = null;
+  editState = createEmptyDesign(10, 10);
+  document.getElementById('edit-title').textContent = 'New Design';
+  document.getElementById('design-name-input').value = '';
+  renderGrid('edit-grid-wrapper', editState, true);
+  renderLegend('edit-legend', editState);
+  navigate('edit');
+}
+
+async function saveDesign() {
+  const name = document.getElementById('design-name-input').value.trim();
+  if (!name) {
+    alert('Please enter a design name.');
+    document.getElementById('design-name-input').focus();
+    return;
+  }
+  if (!dirHandle) {
+    alert('No folder selected. Please select a designs folder first.');
+    navigate('designs');
+    return;
+  }
+  editState.name = name;
+  if (editDesignName && editDesignName !== name) {
+    try { await deleteFile(editDesignName); } catch {}
+  }
+  await writeFile(name, designToCSV(editState));
+  editDesignName = name;
+  showToast('Saved as ' + name + '.csv');
+  navigate('designs');
+}
+
+// ─────────────────────────────────────────────
+// DESIGN DATA OPERATIONS
+// ─────────────────────────────────────────────
+function createEmptyDesign(rows, cols) {
+  const design = { name: '', rows: [] };
+  for (let r = 0; r < rows; r++) {
+    design.rows.push({ direction: r % 2 === 0 ? 'R' : 'L', cells: Array(cols).fill('empty') });
+  }
+  return design;
+}
+
+function addRow() {
+  const cols = editState.rows.length > 0 ? editState.rows[0].cells.length : 10;
+  editState.rows.unshift({ direction: 'R', cells: Array(cols).fill('empty') });
+  highlightedRows['edit-grid-wrapper'] = null;
+  clearSelection();
+  refreshEdit();
+}
+
+function removeLastRow() {
+  if (editState.rows.length <= 1) return;
+  editState.rows.shift();
+  highlightedRows['edit-grid-wrapper'] = null;
+  clearSelection();
+  refreshEdit();
+}
+
+function addCol() {
+  for (const row of editState.rows) row.cells.push('empty');
+  refreshEdit();
+}
+
+function removeLastCol() {
+  for (const row of editState.rows) {
+    if (row.cells.length > 1) row.cells.pop();
+  }
+  refreshEdit();
+}
+
+function toggleDirection(rowIdx) {
+  editState.rows[rowIdx].direction = editState.rows[rowIdx].direction === 'R' ? 'L' : 'R';
+  refreshEdit();
+}
+
+function refreshEdit() {
+  renderGrid('edit-grid-wrapper', editState, true);
+  renderLegend('edit-legend', editState);
+}
+
+// ─────────────────────────────────────────────
+// ZOOM
+// ─────────────────────────────────────────────
+function applyZoom(containerId) {
+  const wrapper = document.getElementById(containerId);
+  const zoomBox = wrapper?.querySelector('.grid-zoom-box');
+  const table   = zoomBox?.querySelector('.grid-table');
+  if (!zoomBox || !table) return;
+  zoomBox.style.transform = 'scale(1)';
+  zoomBox.style.width = 'auto';
+  zoomBox.style.height = 'auto';
+  const nw = table.scrollWidth, nh = table.scrollHeight;
+  zoomBox.style.transform = `scale(${gridZoom})`;
+  zoomBox.style.width  = Math.ceil(nw * gridZoom) + 'px';
+  zoomBox.style.height = Math.ceil(nh * gridZoom) + 'px';
+}
+
+function updateZoomLabels() {
+  const pct = Math.round(gridZoom * 100) + '%';
+  const le = document.getElementById('zoom-label-edit');
+  const lv = document.getElementById('zoom-label-view');
+  if (le) le.textContent = pct;
+  if (lv) lv.textContent = pct;
+}
+
+function zoomIn(containerId) {
+  gridZoom = Math.min(ZOOM_MAX, parseFloat((gridZoom + ZOOM_STEP).toFixed(2)));
+  applyZoom(containerId);
+  updateZoomLabels();
+}
+
+function zoomOut(containerId) {
+  gridZoom = Math.max(ZOOM_MIN, parseFloat((gridZoom - ZOOM_STEP).toFixed(2)));
+  applyZoom(containerId);
+  updateZoomLabels();
+}
+
+
+// ─────────────────────────────────────────────
+// GRID RENDERING
+// ─────────────────────────────────────────────
+function renderGrid(containerId, design, editable) {
+  const wrapper = document.getElementById(containerId);
+  const rows = design.rows;
+
+  if (rows.length === 0) {
+    wrapper.innerHTML = '<p style="color:#aaa;padding:24px;text-align:center">No rows yet. Use "+ Row" to begin.</p>';
+    return;
+  }
+
+  const cols = rows[0].cells.length;
+  const table = document.createElement('table');
+  table.className = 'grid-table';
+
+  // ── header row (column numbers) ──
+  const thead = table.createTHead();
+  const hrow = thead.insertRow();
+
+  addTh(hrow, '', 'hl-btn-cell');        // highlight button column
+  addTh(hrow, '', 'corner-cell-narrow'); // row number
+  addTh(hrow, '', 'corner-cell');        // left R/L
+  for (let c = 0; c < cols; c++) addTh(hrow, c + 1, 'cell-th');
+  addTh(hrow, '', 'corner-cell');        // right R/L
+
+  // ── body rows ──
+  const tbody = table.createTBody();
+  for (let r = 0; r < rows.length; r++) {
+    const row = rows[r];
+    const tr = tbody.insertRow();
+    if (highlightedRows[containerId] === r) tr.classList.add('grid-row-highlighted');
+
+    // highlight toggle button (radio — one row at a time)
+    const hlTd = tr.insertCell();
+    hlTd.className = 'hl-btn-cell';
+    const hlBtn = document.createElement('button');
+    const isHl = highlightedRows[containerId] === r;
+    hlBtn.className = 'hl-btn' + (isHl ? ' active' : '');
+    hlBtn.title = 'Highlight row';
+    hlBtn.addEventListener('click', () => {
+      // Deselect previously highlighted row
+      const prev = highlightedRows[containerId];
+      if (prev !== null) {
+        const prevRow = tbody.rows[prev];
+        if (prevRow) {
+          prevRow.classList.remove('grid-row-highlighted');
+          prevRow.cells[0].querySelector('.hl-btn')?.classList.remove('active');
+        }
+      }
+      // Toggle: clicking same row again clears it
+      if (prev === r) {
+        highlightedRows[containerId] = null;
+      } else {
+        highlightedRows[containerId] = r;
+        tr.classList.add('grid-row-highlighted');
+        hlBtn.classList.add('active');
+      }
+    });
+    hlTd.appendChild(hlBtn);
+
+    // row number
+    const rowNumTd = tr.insertCell();
+    rowNumTd.className = 'corner-cell-narrow';
+    rowNumTd.style.cssText = 'text-align:center;font-size:0.65rem;color:#bbb;vertical-align:middle;';
+    rowNumTd.textContent = rows.length - r;
+
+    // left direction label
+    const leftLabel = tr.insertCell();
+    leftLabel.className = 'row-label' + (editable ? ' editable' : '');
+    leftLabel.textContent = row.direction;
+    leftLabel.title = editable ? 'Click to toggle R / L' : '';
+    if (editable) leftLabel.dataset.dirRow = r;
+
+    // stitch cells
+    for (let c = 0; c < row.cells.length; c++) {
+      const td = tr.insertCell();
+      td.className = 'grid-cell' + (editable ? ' editable' : '');
+      const sid = STITCHES[row.cells[c]] ? row.cells[c] : 'empty';
+      td.innerHTML = STITCHES[sid].svg;
+      td.title = STITCHES[sid].name;
+      if (editable) { td.dataset.cellRow = r; td.dataset.cellCol = c; }
+    }
+
+    // right direction label (mirror)
+    const rightLabel = tr.insertCell();
+    rightLabel.className = 'row-label' + (editable ? ' editable' : '');
+    rightLabel.textContent = row.direction;
+    rightLabel.title = editable ? 'Click to toggle R / L' : '';
+    if (editable) rightLabel.dataset.dirRow = r;
+  }
+
+  // Zoom container
+  const zoomBox = document.createElement('div');
+  zoomBox.className = 'grid-zoom-box';
+  zoomBox.style.transformOrigin = 'top left';
+  zoomBox.appendChild(table);
+  wrapper.innerHTML = '';
+  wrapper.appendChild(zoomBox);
+  // Defer measurement until after the browser has laid out the new table
+  requestAnimationFrame(() => applyZoom(containerId));
+
+  if (editable) {
+    table.addEventListener('click', e => {
+      const cellTd = e.target.closest('[data-cell-row]');
+      if (cellTd) {
+        const r = +cellTd.dataset.cellRow, c = +cellTd.dataset.cellCol;
+        if (editSelectMode) { toggleCellSelection(r, c, cellTd); return; }
+        openPicker(r, c, e);
+        return;
+      }
+      const labelTd = e.target.closest('[data-dir-row]');
+      if (labelTd) toggleDirection(+labelTd.dataset.dirRow);
+    });
+  }
+}
+
+// ─────────────────────────────────────────────
+// MULTI-CELL SELECTION
+// ─────────────────────────────────────────────
+function toggleSelectMode() {
+  editSelectMode = !editSelectMode;
+  const btn = document.getElementById('btn-select-mode');
+  btn.classList.toggle('btn-select-active', editSelectMode);
+  btn.textContent = editSelectMode ? '✓ Selecting' : 'Select Cells';
+  if (!editSelectMode) clearSelection();
+}
+
+function toggleCellSelection(r, c, td) {
+  const key = `${r},${c}`;
+  if (selectedCells.has(key)) {
+    selectedCells.delete(key);
+    td.classList.remove('multi-selected');
+  } else {
+    selectedCells.add(key);
+    td.classList.add('multi-selected');
+  }
+  updateApplyBtn();
+}
+
+function clearSelection() {
+  selectedCells.clear();
+  document.querySelectorAll('#edit-grid-wrapper .multi-selected')
+    .forEach(td => td.classList.remove('multi-selected'));
+  updateApplyBtn();
+}
+
+function updateApplyBtn() {
+  const btn = document.getElementById('btn-apply-stitch');
+  if (!btn) return;
+  const n = selectedCells.size;
+  if (editSelectMode && n > 0) {
+    btn.style.display = '';
+    btn.textContent = `Set Stitch (${n})`;
+  } else {
+    btn.style.display = 'none';
+  }
+}
+
+function addTh(row, text, cls) {
+  const th = document.createElement('th');
+  th.className = cls;
+  th.textContent = text;
+  row.appendChild(th);
+  return th;
+}
+
+// ─────────────────────────────────────────────
+// LEGEND
+// ─────────────────────────────────────────────
+function renderLegend(containerId, design) {
+  const used = new Set();
+  for (const row of design.rows)
+    for (const cell of row.cells)
+      if (cell && cell !== 'empty') used.add(cell);
+
+  const el = document.getElementById(containerId);
+  if (used.size === 0) { el.innerHTML = ''; return; }
+
+  const wrap = document.createElement('div');
+  wrap.className = 'stitch-legend';
+
+  const h3 = document.createElement('h3');
+  h3.textContent = 'Stitch Legend';
+  wrap.appendChild(h3);
+
+  const grid = document.createElement('div');
+  grid.className = 'legend-grid';
+
+  for (const id of used) {
+    const stitch = STITCHES[id];
+    if (!stitch) continue;
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = stitch.svg;
+    const label = document.createElement('span');
+    label.textContent = stitch.name;
+    item.appendChild(label);
+    grid.appendChild(item);
+  }
+
+  wrap.appendChild(grid);
+  el.innerHTML = '';
+  el.appendChild(wrap);
+}
+
+// ─────────────────────────────────────────────
+// STITCH PICKER
+// ─────────────────────────────────────────────
+function openPicker(rowIdx, colIdx, event) {
+  pickerContext = { rowIdx, colIdx };
+
+  const optionsEl = document.getElementById('stitch-options');
+  optionsEl.innerHTML = '';
+
+  const currentId = editState.rows[rowIdx].cells[colIdx] || 'empty';
+
+  for (const [id, stitch] of Object.entries(STITCHES)) {
+    const div = document.createElement('div');
+    div.className = 'stitch-option' + (id === currentId ? ' current' : '');
+    div.innerHTML = stitch.svg;
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'stitch-name';
+    nameSpan.textContent = stitch.name;
+    div.appendChild(nameSpan);
+    div.addEventListener('click', () => selectStitch(id));
+    optionsEl.appendChild(div);
+  }
+
+  const picker = document.getElementById('stitch-picker');
+  picker.classList.add('visible');
+  document.getElementById('picker-overlay').classList.add('visible');
+
+  // Position near the clicked cell, keep inside viewport
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const pw = 320, ph = Math.min(420, vh * 0.8);
+  let x = event.clientX + 12, y = event.clientY - 20;
+  if (x + pw > vw - 8) x = event.clientX - pw - 8;
+  if (y + ph > vh - 8) y = vh - ph - 8;
+  if (y < 8) y = 8;
+  picker.style.left = x + 'px';
+  picker.style.top = y + 'px';
+  picker.style.transform = 'none';
+}
+
+function closePicker() {
+  document.getElementById('stitch-picker').classList.remove('visible');
+  document.getElementById('picker-overlay').classList.remove('visible');
+  pickerContext = null;
+}
+
+function selectStitch(id) {
+  if (!pickerContext) return;
+  if (pickerContext.multi) {
+    for (const key of selectedCells) {
+      const [r, c] = key.split(',').map(Number);
+      editState.rows[r].cells[c] = id;
+    }
+    clearSelection();
+    editSelectMode = false;
+    const btn = document.getElementById('btn-select-mode');
+    btn.classList.remove('btn-select-active');
+    btn.textContent = 'Select Cells';
+  } else {
+    editState.rows[pickerContext.rowIdx].cells[pickerContext.colIdx] = id;
+  }
+  closePicker();
+  refreshEdit();
+}
+
+// ─────────────────────────────────────────────
+// IMPORT  (copy CSV files into the designs folder)
+// ─────────────────────────────────────────────
+async function handleImport(event) {
+  if (!dirHandle) {
+    alert('Please select a designs folder first.');
+    event.target.value = '';
+    return;
+  }
+  const files = Array.from(event.target.files);
+  if (!files.length) return;
+  let done = 0;
+  for (const file of files) {
+    const text = await file.text();
+    const design = csvToDesign(text);
+    if (!design.name || design.name === 'Untitled')
+      design.name = file.name.replace(/\.csv$/i, '');
+    await writeFile(design.name, designToCSV(design));
+    done++;
+  }
+  await refreshFileHandles();
+  renderDesigns();
+  showToast('Imported ' + done + (done > 1 ? ' designs' : ' design'));
+  event.target.value = '';
+}
+
+async function confirmDelete(name) {
+  if (!confirm(`Delete "${name}.csv"? This cannot be undone.`)) return;
+  try {
+    await deleteFile(name);
+    showToast('Deleted ' + name + '.csv');
+    renderDesigns();
+  } catch (e) {
+    showToast('Error: could not delete file');
+    console.error(e);
+  }
+}
+
+// ─────────────────────────────────────────────
+// TOAST
+// ─────────────────────────────────────────────
+let _toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 2400);
+}
+
+// ─────────────────────────────────────────────
+// WIRE UP EVENT LISTENERS
+// ─────────────────────────────────────────────
+document.getElementById('nav-designs').addEventListener('click', () => navigate('designs'));
+document.getElementById('nav-new').addEventListener('click', startNew);
+document.getElementById('btn-new-top').addEventListener('click', startNew);
+document.getElementById('btn-import').addEventListener('click', () => document.getElementById('csv-import-input').click());
+document.getElementById('csv-import-input').addEventListener('change', handleImport);
+
+document.getElementById('folder-indicator').addEventListener('click', async () => {
+  if (await selectFolder()) { updateFolderIndicator(); renderDesigns(); }
+});
+
+document.getElementById('btn-back-view').addEventListener('click', () => navigate('designs'));
+document.getElementById('btn-edit-view').addEventListener('click', () => { if (viewDesignName) openEdit(viewDesignName); });
+document.getElementById('btn-zoom-in-view').addEventListener('click',  () => zoomIn('view-grid-wrapper'));
+document.getElementById('btn-zoom-out-view').addEventListener('click', () => zoomOut('view-grid-wrapper'));
+document.getElementById('btn-zoom-in-edit').addEventListener('click',  () => zoomIn('edit-grid-wrapper'));
+document.getElementById('btn-zoom-out-edit').addEventListener('click', () => zoomOut('edit-grid-wrapper'));
+
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey) {
+    const activeWrapper = currentPage === 'edit' ? 'edit-grid-wrapper' : currentPage === 'view' ? 'view-grid-wrapper' : null;
+    if (!activeWrapper) return;
+    if (e.key === '=' || e.key === '+') { e.preventDefault(); zoomIn(activeWrapper); }
+    if (e.key === '-')                  { e.preventDefault(); zoomOut(activeWrapper); }
+  }
+});
+
+document.getElementById('btn-cancel-edit').addEventListener('click', () => navigate('designs'));
+document.getElementById('btn-save-edit').addEventListener('click', saveDesign);
+document.getElementById('btn-add-row').addEventListener('click', addRow);
+document.getElementById('btn-del-row').addEventListener('click', removeLastRow);
+document.getElementById('btn-add-col').addEventListener('click', addCol);
+document.getElementById('btn-del-col').addEventListener('click', removeLastCol);
+document.getElementById('btn-select-mode').addEventListener('click', toggleSelectMode);
+document.getElementById('btn-apply-stitch').addEventListener('click', e => {
+  if (selectedCells.size === 0) return;
+  pickerContext = { multi: true };
+  const picker = document.getElementById('stitch-picker');
+  // rebuild options
+  const optionsEl = document.getElementById('stitch-options');
+  optionsEl.innerHTML = '';
+  for (const [id, stitch] of Object.entries(STITCHES)) {
+    const div = document.createElement('div');
+    div.className = 'stitch-option';
+    div.innerHTML = stitch.svg;
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'stitch-name';
+    nameSpan.textContent = stitch.name;
+    div.appendChild(nameSpan);
+    div.addEventListener('click', () => selectStitch(id));
+    optionsEl.appendChild(div);
+  }
+  picker.classList.add('visible');
+  document.getElementById('picker-overlay').classList.add('visible');
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const pw = 320, ph = Math.min(420, vh * 0.8);
+  let x = e.clientX + 12, y = e.clientY - 20;
+  if (x + pw > vw - 8) x = e.clientX - pw - 8;
+  if (y + ph > vh - 8) y = vh - ph - 8;
+  if (y < 8) y = 8;
+  picker.style.left = x + 'px';
+  picker.style.top = y + 'px';
+  picker.style.transform = 'none';
+});
+
+document.getElementById('btn-close-picker').addEventListener('click', closePicker);
+document.getElementById('picker-overlay').addEventListener('click', closePicker);
+
+document.getElementById('design-name-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') saveDesign();
+});
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+(async () => {
+  await initDirHandle();
+  updateFolderIndicator();
+  navigate('designs');
+})();
+</script>
+</body>
+</html>
