@@ -301,7 +301,7 @@ main { max-width: 1300px; margin: 0 auto; padding: 32px 24px 60px; }
 }
 
 /* Highlighted row */
-.grid-row-highlighted .grid-cell                 { background: #fffde7 !important; }
+.grid-row-highlighted .grid-cell , .row-fs-cell-active { background: #bf7dc96b !important;  border: 3px solid #000000 !important; border-bottom: 2px;}
 .grid-row-highlighted .row-label                 { background: #fff8c4 !important; }
 .grid-row-highlighted .grid-cell.editable:hover  { background: #fff3b0 !important; }
 
@@ -498,8 +498,11 @@ main { max-width: 1300px; margin: 0 auto; padding: 32px 24px 60px; }
 /* Dimensions are set by JS to ensure square cells at 95vw */
 .row-fs-cell {
   border: 1px solid #d8cfc2; text-align: center; vertical-align: middle;
-  background: #ffffff; padding: 0;
+  
+  padding: 0;
 }
+
+
 .row-fs-cell svg { display: block; margin: auto; color: #1b4332; }
 .row-fs-num-cell {
   background: #f5f0ea; color: #aaa;
@@ -1266,9 +1269,32 @@ function renderGrid(containerId, design, editable) {
         highlightedRows[containerId] = r;
         tr.classList.add('grid-row-highlighted');
         hlBtn.classList.add('active');
+        //openRowFullscreen(r, containerId);
+      }
+    });
+
+    hlBtn.addEventListener('dblclick', () => {
+       // Deselect previously highlighted row
+      const prev = highlightedRows[containerId];
+      if (prev !== null) {
+        const prevTr = tbody.querySelector(`[data-row-idx="${prev}"]`);
+        if (prevTr) {
+          prevTr.classList.remove('grid-row-highlighted');
+          prevTr.querySelector('.hl-btn')?.classList.remove('active');
+        }
+      }
+      // Toggle: clicking same row again clears it
+      if (prev === r) {
+        highlightedRows[containerId] = null;
+        closeRowFullscreen();
+      } else {
+        highlightedRows[containerId] = r;
+        tr.classList.add('grid-row-highlighted');
+        hlBtn.classList.add('active');
         openRowFullscreen(r, containerId);
       }
     });
+    
     hlTd.appendChild(hlBtn);
 
     // row number
@@ -1674,7 +1700,8 @@ function renderRowFS() {
   hrow.appendChild(mkCorner());
   for (let c = 0; c < row.cells.length; c++) {
     const th = document.createElement('th');
-    th.className = 'row-fs-num-cell'; th.style.cssText = hdrStyle;
+    th.className = 'row-fs-num-cell'; 
+    th.style.cssText = hdrStyle;
     th.textContent = c + 1;
     hrow.appendChild(th);
   }
@@ -1682,7 +1709,7 @@ function renderRowFS() {
 
   // ── Helper: render one data row ──
   const tbody = table.createTBody();
-  const addRow = (rowData, highlight) => {
+  const addRow = (rowData, highlight, isActive = false) => {
     const tr = tbody.insertRow();
     if (highlight) tr.style.background = '#fffde7';
 
@@ -1694,7 +1721,7 @@ function renderRowFS() {
     mkLabel();
     for (const cellId of rowData.cells) {
       const td  = tr.insertCell();
-      td.className = 'row-fs-cell'; td.style.cssText = sqStyle;
+      td.className = 'row-fs-cell' + (isActive ? ' row-fs-cell-active' : ''); td.style.cssText = sqStyle;
       const sid = STITCHES[cellId] ? cellId : 'empty';
       td.innerHTML = STITCHES[sid].svg;
       td.title     = STITCHES[sid].name;
@@ -1705,7 +1732,7 @@ function renderRowFS() {
   };
 
   // Selected row (highlighted) + row below (if exists)
-  addRow(row, true);
+  addRow(row, true, true);
   if (rowFsRowIdx + 1 < totalRows) addRow(design.rows[rowFsRowIdx + 1], false);
 
   wrap.appendChild(table);
