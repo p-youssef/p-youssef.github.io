@@ -266,6 +266,40 @@ main { max-width: 1300px; margin: 0 auto; padding: 32px 24px 60px; }
 /* Select-mode active button state */
 .btn-select-active { background: #1d4ed8 !important; color: white !important; border-color: #1d4ed8 !important; }
 
+/* ── Insert row zone (thin strip between rows) ── */
+.insert-row-zone td { padding: 0; border: none; height: 8px; }
+.insert-row-btn {
+  display: block; width: 100%; height: 100%; min-height: 8px;
+  background: none; border: none; border-top: 2px dashed transparent;
+  cursor: pointer; padding: 0; color: transparent; font-size: 0.6rem; font-weight: 700;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.insert-row-zone:hover .insert-row-btn {
+  color: #2d6a4f; border-color: #2d6a4f; background: rgba(45,106,79,0.07);
+}
+
+/* ── Insert col zone (header only) ── */
+.insert-col-zone {
+  width: 8px !important; min-width: 8px !important;
+  padding: 0 !important; border: none !important;
+  background: transparent; position: relative;
+}
+.insert-col-btn {
+  display: block; width: 100%; height: 100%; min-height: 26px;
+  background: none; border: none; border-left: 2px dashed transparent;
+  cursor: pointer; padding: 0;
+  transition: border-color 0.15s, background 0.15s;
+}
+.insert-col-zone:hover .insert-col-btn {
+  border-color: #2d6a4f; background: rgba(45,106,79,0.07);
+}
+/* Structural spacer in body rows to match header column count */
+.insert-col-spacer {
+  width: 8px !important; min-width: 8px !important;
+  padding: 0 !important; border: none !important;
+  background: transparent;
+}
+
 /* Highlighted row */
 .grid-row-highlighted .grid-cell                 { background: #fffde7 !important; }
 .grid-row-highlighted .row-label                 { background: #fff8c4 !important; }
@@ -1017,6 +1051,19 @@ function removeLastCol() {
   refreshEdit();
 }
 
+function insertRowAt(afterIdx) {
+  const cols = editState.rows.length > 0 ? editState.rows[0].cells.length : 10;
+  editState.rows.splice(afterIdx + 1, 0, { direction: 'R', cells: Array(cols).fill('empty') });
+  highlightedRows['edit-grid-wrapper'] = null;
+  clearSelection();
+  refreshEdit();
+}
+
+function insertColAt(afterIdx) {
+  for (const row of editState.rows) row.cells.splice(afterIdx + 1, 0, 'empty');
+  refreshEdit();
+}
+
 function toggleDirection(rowIdx) {
   editState.rows[rowIdx].direction = editState.rows[rowIdx].direction === 'R' ? 'L' : 'R';
   refreshEdit();
@@ -1088,7 +1135,10 @@ function renderGrid(containerId, design, editable) {
   addTh(hrow, '', 'hl-btn-cell');        // highlight button column
   addTh(hrow, '', 'corner-cell-narrow'); // row number
   addTh(hrow, '', 'corner-cell');        // left R/L
-  for (let c = 0; c < cols; c++) addTh(hrow, c + 1, 'cell-th');
+  for (let c = 0; c < cols; c++) {
+    addTh(hrow, c + 1, 'cell-th');
+    if (editable && c < cols - 1) hrow.appendChild(makeInsertColCell(c, 'th'));
+  }
   addTh(hrow, '', 'corner-cell');        // right R/L
 
   // ── body rows ──
@@ -1096,6 +1146,7 @@ function renderGrid(containerId, design, editable) {
   for (let r = 0; r < rows.length; r++) {
     const row = rows[r];
     const tr = tbody.insertRow();
+    tr.dataset.rowIdx = r;
     if (highlightedRows[containerId] === r) tr.classList.add('grid-row-highlighted');
 
     // highlight toggle button (radio — one row at a time)
@@ -1109,10 +1160,10 @@ function renderGrid(containerId, design, editable) {
       // Deselect previously highlighted row
       const prev = highlightedRows[containerId];
       if (prev !== null) {
-        const prevRow = tbody.rows[prev];
-        if (prevRow) {
-          prevRow.classList.remove('grid-row-highlighted');
-          prevRow.cells[0].querySelector('.hl-btn')?.classList.remove('active');
+        const prevTr = tbody.querySelector(`[data-row-idx="${prev}"]`);
+        if (prevTr) {
+          prevTr.classList.remove('grid-row-highlighted');
+          prevTr.querySelector('.hl-btn')?.classList.remove('active');
         }
       }
       // Toggle: clicking same row again clears it
@@ -1141,12 +1192,18 @@ function renderGrid(containerId, design, editable) {
 
     // stitch cells
     for (let c = 0; c < row.cells.length; c++) {
-      const td = tr.insertCell();
+      const td = document.createElement('td');
       td.className = 'grid-cell' + (editable ? ' editable' : '');
       const sid = STITCHES[row.cells[c]] ? row.cells[c] : 'empty';
       td.innerHTML = STITCHES[sid].svg;
       td.title = STITCHES[sid].name;
       if (editable) { td.dataset.cellRow = r; td.dataset.cellCol = c; }
+      tr.appendChild(td);
+      if (editable && c < row.cells.length - 1) {
+        const sp = document.createElement('td');
+        sp.className = 'insert-col-spacer';
+        tr.appendChild(sp);
+      }
     }
 
     // right direction label (mirror)
@@ -1155,6 +1212,11 @@ function renderGrid(containerId, design, editable) {
     rightLabel.textContent = row.direction;
     rightLabel.title = editable ? 'Click to toggle R / L' : '';
     if (editable) rightLabel.dataset.dirRow = r;
+
+    // insert-row zone between this row and the next (button shown in header columns only)
+    if (editable && r < rows.length - 1) {
+      tbody.appendChild(makeInsertRowZone(r, cols));
+    }
   }
 
   // Zoom container
@@ -1290,6 +1352,37 @@ function addTh(row, text, cls) {
   th.textContent = text;
   row.appendChild(th);
   return th;
+}
+
+function makeInsertRowZone(afterIdx, cols) {
+  const tr = document.createElement('tr');
+  tr.className = 'insert-row-zone';
+  // Button cell spans only the left-header columns (hl-btn + rownum + leftlabel)
+  const tdBtn = document.createElement('td');
+  tdBtn.colSpan = 3;
+  const btn = document.createElement('button');
+  btn.className = 'insert-row-btn';
+  btn.title = 'Insert row here';
+  btn.textContent = '+ row';
+  btn.addEventListener('click', () => insertRowAt(afterIdx));
+  tdBtn.appendChild(btn);
+  tr.appendChild(tdBtn);
+  // Empty cell covers data columns + insert-col spacers + right-label
+  const tdRest = document.createElement('td');
+  tdRest.colSpan = 2 * cols;  // cols data + (cols-1) spacers + 1 rightlabel
+  tr.appendChild(tdRest);
+  return tr;
+}
+
+function makeInsertColCell(afterColIdx, tag) {
+  const el = document.createElement(tag);
+  el.className = 'insert-col-zone';
+  const btn = document.createElement('button');
+  btn.className = 'insert-col-btn';
+  btn.title = 'Insert column here';
+  btn.addEventListener('click', () => insertColAt(afterColIdx));
+  el.appendChild(btn);
+  return el;
 }
 
 // ─────────────────────────────────────────────
