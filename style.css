@@ -1207,6 +1207,187 @@ input::placeholder, textarea::placeholder { color: var(--text-4); }
 .footer-links { display: flex; align-items: center; gap: .375rem; }
 .footer-links .icon-btn:hover { color: var(--accent); background: var(--accent-bg); }
 
+/* ═════════════════════════════
+   Lab page
+═════════════════════════════ */
+.lab-back {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .875rem;
+  font-weight: 500;
+  color: var(--text-3);
+  transition: color var(--t-base) var(--ease), gap var(--t-base) var(--ease-spring);
+  margin-bottom: 2.5rem;
+}
+.lab-back:hover { color: var(--accent); gap: .6rem; }
+
+.lab-header { margin-bottom: 1rem; }
+.lab-header h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -.03em;
+  line-height: 1.1;
+  margin-bottom: .875rem;
+}
+.lab-header p {
+  font-size: 1rem;
+  color: var(--text-3);
+  line-height: 1.75;
+  max-width: 44rem;
+}
+
+/* Lab spotlight (homepage preview) */
+.lab-spotlight {
+  position: relative;
+  border-radius: 1.5rem;
+  border: 1px solid var(--accent-bdr);
+  background:
+    radial-gradient(ellipse 55% 80% at 5% 50%, var(--accent-bg) 0%, transparent 60%),
+    var(--bg-alt);
+  padding: 2.5rem;
+  overflow: hidden;
+}
+.lab-spotlight::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), #7c3aed, transparent);
+  pointer-events: none;
+}
+.dark .lab-spotlight::before {
+  background: linear-gradient(90deg, transparent, #6b92fb, #a78bfa, transparent);
+}
+
+.lab-spotlight-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+@media (min-width: 640px) {
+  .lab-spotlight-header {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+}
+
+.lab-spotlight-header h2 {
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -.025em;
+  line-height: 1.1;
+  margin-bottom: .5rem;
+}
+
+.lab-spotlight-sub {
+  font-size: .9rem;
+  color: var(--text-3);
+  line-height: 1.7;
+  max-width: 36rem;
+}
+
+.lab-spotlight-cta { flex-shrink: 0; }
+
+.lab-preview-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 560px) { .lab-preview-grid { grid-template-columns: repeat(2, 1fr); } }
+
+/* Lab card grid */
+.lab-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: 1fr;
+  margin-top: 3rem;
+}
+@media (min-width: 600px)  { .lab-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .lab-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); } }
+
+.lab-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.375rem 1.5rem 1.25rem;
+  transition:
+    border-color var(--t-base) var(--ease),
+    box-shadow var(--t-base) var(--ease),
+    transform var(--t-base) var(--ease);
+}
+.lab-card:hover {
+  border-color: var(--accent-bdr);
+  box-shadow: 0 4px 20px var(--glow);
+  transform: translateY(-2px);
+}
+
+.lab-card-emoji {
+  font-size: 2.25rem;
+  line-height: 1;
+  margin-bottom: 1rem;
+  user-select: none;
+}
+
+.lab-card-title {
+  font-size: .9375rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -.01em;
+  margin-bottom: .375rem;
+}
+
+.lab-card-desc {
+  font-size: .875rem;
+  color: var(--text-3);
+  line-height: 1.6;
+  flex: 1;
+  margin-bottom: 1.125rem;
+}
+
+.lab-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  padding-top: .875rem;
+  border-top: 1px solid var(--border);
+  margin-top: auto;
+}
+
+.lab-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem;
+}
+.lab-card-tags span {
+  font-size: .7rem;
+  font-weight: 500;
+  color: var(--text-4);
+  letter-spacing: .04em;
+  padding: .15rem .5rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: var(--bg-alt);
+}
+
+.lab-card-open {
+  font-size: .8125rem;
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: color var(--t-base) var(--ease), letter-spacing var(--t-base) var(--ease-spring);
+}
+.lab-card-open:hover { color: var(--accent-h); letter-spacing: .03em; }
+
 /* ────────────────────────────
    Scroll-reveal
 ──────────────────────────── */

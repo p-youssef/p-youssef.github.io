@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Weekend experiments, small games, and personal tools by Philip Youssef." />
+  <title>Lab — Philip Youssef</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- ── Navbar ── -->
+  <header class="navbar" id="navbar">
+    <nav class="nav-inner" aria-label="Primary navigation">
+      <a href="index.html" class="nav-brand">Philip Youssef</a>
+
+      <ul class="nav-links" role="list">
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#experience">Experience</a></li>
+        <li><a href="index.html#projects">Projects</a></li>
+        <li><a href="lab.html" class="active" aria-current="page">Lab</a></li>
+        <li><a href="index.html#skills">Skills</a></li>
+        <li><a href="index.html#education">Education</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button id="theme-toggle" class="icon-btn" aria-label="Switch to dark mode">
+          <svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        </button>
+        <button id="menu-toggle" class="icon-btn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu">
+          <svg class="icon icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          <svg class="icon icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </nav>
+
+    <div id="mobile-menu" class="mobile-menu" aria-hidden="true">
+      <ul role="list">
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#experience">Experience</a></li>
+        <li><a href="index.html#projects">Projects</a></li>
+        <li><a href="lab.html" class="active" aria-current="page">Lab</a></li>
+        <li><a href="index.html#skills">Skills</a></li>
+        <li><a href="index.html#education">Education</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <section id="lab" aria-labelledby="lab-heading" class="section">
+      <div class="container">
+
+        <a href="index.html" class="lab-back" aria-label="Back to home">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+          Back to home
+        </a>
+
+        <div class="lab-header">
+          <p class="eyebrow">Experiments</p>
+          <h1 id="lab-heading">Lab</h1>
+          <p>Small things I've built for fun or personal use. Weekend experiments, games, and tools — not production code, just me tinkering.</p>
+        </div>
+
+        <!-- Add new lab items by duplicating a <article class="lab-card">...</article> block below -->
+        <div class="lab-grid" role="list">
+
+          <article class="lab-card" role="listitem">
+            <div class="lab-card-emoji" aria-hidden="true">🎮</div>
+            <h2 class="lab-card-title">Guess the Number</h2>
+            <p class="lab-card-desc">Guess a secret number between 1 and 100. The game tells you whether to go higher or lower.</p>
+            <div class="lab-card-footer">
+              <div class="lab-card-tags" aria-label="Technologies">
+                <span>HTML</span>
+                <span>CSS</span>
+                <span>JS</span>
+              </div>
+              <a href="lab/example-game/" target="_blank" rel="noopener noreferrer" class="lab-card-open" aria-label="Open Guess the Number in a new tab">
+                Open →
+              </a>
+            </div>
+          </article>
+
+          <article class="lab-card" role="listitem">
+            <div class="lab-card-emoji" aria-hidden="true">🎨</div>
+            <h2 class="lab-card-title">Color Palette</h2>
+            <p class="lab-card-desc">Generate and preview random harmonious color palettes. Click any swatch to copy its hex value.</p>
+            <div class="lab-card-footer">
+              <div class="lab-card-tags" aria-label="Technologies">
+                <span>HTML</span>
+                <span>CSS</span>
+                <span>JS</span>
+              </div>
+              <a href="#" target="_blank" rel="noopener noreferrer" class="lab-card-open" aria-label="Open Color Palette in a new tab (coming soon)">
+                Soon →
+              </a>
+            </div>
+          </article>
+
+          <article class="lab-card" role="listitem">
+            <div class="lab-card-emoji" aria-hidden="true">⏱️</div>
+            <h2 class="lab-card-title">Focus Timer</h2>
+            <p class="lab-card-desc">A minimal Pomodoro-style countdown timer. Set a duration, stay off distractions, get the beep.</p>
+            <div class="lab-card-footer">
+              <div class="lab-card-tags" aria-label="Technologies">
+                <span>HTML</span>
+                <span>CSS</span>
+                <span>JS</span>
+              </div>
+              <a href="#" target="_blank" rel="noopener noreferrer" class="lab-card-open" aria-label="Open Focus Timer in a new tab (coming soon)">
+                Soon →
+              </a>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ── Footer ── -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <p>&copy; <span id="footer-year"></span> Philip Youssef. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="mailto:philipyoussef55@gmail.com" aria-label="Email Philip Youssef" class="icon-btn">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/in/philip-youssef-aa7639224/" target="_blank" rel="noopener noreferrer" aria-label="Philip Youssef on LinkedIn" class="icon-btn">
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        </a>
+        <a href="index.html" aria-label="Back to home" class="icon-btn">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>
