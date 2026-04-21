@@ -1,550 +1,659 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Philip Youssef</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&family=Lexend+Tera:wght@100..900&family=Righteous&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Rubik:ital,wght@0,300..900;1,300..900&family=Saira:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./main.css">
-
-    <meta name="title" content="Philip Youssef">
-    <meta name="description" content="Portfolio">
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://p-youssef.github.io/">
-    <meta property="og:title" content="Philip Youssef">
-    <meta property="og:description" content="Portfolio">
-    <meta property="og:image" content="https://p-youssef.github.io/cover.png">
-
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://p-youssef.github.io/">
-    <meta name="twitter:title" content="Philip Youssef">
-    <meta name="twitter:description" content="Portfolio">
-    <meta name="twitter:image" content="https://p-youssef.github.io/cover.png">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Full-Stack Developer & IT Engineering Student. Building scalable, user-focused web applications with Django, React, .NET, and AWS." />
+  <title>Philip Youssef — Full-Stack Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
-<script>
-//
-  window.addEventListener("load", () => {
-    const loader = document.getElementById("loader");
-    loader.style.transition = "opacity 0.4s";
-    loader.style.opacity = 0;
-    setTimeout(() => {
-      loader.style.display = "none";
-    }, 1000);
-  });
-
-</script>
-
 <body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
 
-  
-  <div id="loader">
-    <!-- Include your exact SVG content here -->
-    <div id="logo-container">
-      <div class="wave-circle"></div>
+  <!-- ── Navbar ── -->
+  <header class="navbar" id="navbar">
+    <nav class="nav-inner" aria-label="Primary navigation">
+      <a href="#hero" class="nav-brand">Philip Youssef</a>
 
-      <img src="./CREDOM dark.svg"  alt="">
+      <ul class="nav-links" role="list">
+        <li><a href="#about">About</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#education">Education</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button id="theme-toggle" class="icon-btn" aria-label="Switch to dark mode">
+          <svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        </button>
+        <button id="menu-toggle" class="icon-btn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu">
+          <svg class="icon icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          <svg class="icon icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </nav>
+
+    <div id="mobile-menu" class="mobile-menu" aria-hidden="true">
+      <ul role="list">
+        <li><a href="#about">About</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#education">Education</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
     </div>
-  </div>
-  
-  
-    <nav class="h_nav">
-        <a href="#first" style="display: flex;align-items: center;">
-            <img src="./CREDOM dark.png" class="credom_logo" alt="">
-            <div class="title-block hidden">
-                
-                <h1><u>Philip Youssef</u></h1>
-                <p>Full Stack Developer</p>
-            </div>
-        </a>
-        
+  </header>
 
-        <div class="languages">
-            <a href="#">EN</a>
-            <a href="#">IT</a>
-        </div>
-    </nav>
-    <nav class="v_nav">
-        <a href="#first" style="display: none;"></a>
-        <a href="#about_me">01
-            <p>About me</p>
-        </a>
-        <a href="#project_1">02
-            <p>Dafaa.it</p>
-        </a>
-        <a href="#project_2">03
-            <p>DiAgri</p>
-        </a>
-        <a href="#skills">04
-            <p>Skills</p>
-        </a>
-        <a href="#certifications">05
-          <p>Courses</p>
-        </a>
+  <main id="main-content">
 
-        <a href="#experiences">06
-          <p>Experiences</p>
-        </a>
-        
-        <a href="#experiences-1" class="subsection">
-          <p>2022 - 2024</p>
-        </a>
-
-        <a href="#experiences-2" class="subsection">
-          <p>2021 - 2022</p>
-        </a>
-
-        <a href="#experiences-3" class="subsection">
-          <p>2021 - 2023</p>
-        </a>
-
-        <a href="#papers">08
-          <p>Papers</p>
-        </a>
-
-        <a href="#papers-1" class="subsection">
-          <p>Node.js vs Django</p>
-        </a>
-
-        <a href="#contact">07
-          <p>Contact</p>
-        </a>
-
-        
-    </nav>
-    <div id="first" class="View_1 section">
-        
-        <div class="bg"></div>
-        <div class="title">
-            <h1>Philip</h1>
-            <h1><u>Youssef</u></h1>
-            <h2>Full Stack Developer</h2>
-            <a href="https://www.linkedin.com/in/philip-youssef-aa7639224/" target="_blank" rel="noopener noreferrer">
-                <img src="./linkedin.png" class="social_icon" alt="LinkedIn Profile">
+    <!-- ── Hero ── -->
+    <section id="hero" aria-label="Introduction" class="hero">
+      <div class="grid-bg" aria-hidden="true"></div>
+      <div class="container hero-container">
+        <div class="hero-text">
+          <div class="badge">
+            <span class="badge-dot" aria-hidden="true"></span>
+            Available for opportunities
+          </div>
+          <h1>Philip<br /><span class="gradient-text">Youssef</span></h1>
+          <p class="hero-role">Full-Stack Developer &amp; IT Engineering Student</p>
+          <p class="hero-tagline">I turn ideas into production-ready platforms — from Django APIs to React UIs on AWS.</p>
+          <div class="hero-actions">
+            <a href="#projects" class="btn btn-primary">View Projects</a>
+            <a href="#contact" class="btn btn-outline">Contact Me</a>
+            <a href="#" class="btn btn-outline" aria-label="Download CV — placeholder link">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download CV
             </a>
-            
           </div>
-        <div class="myPhotoContainer" style="z-index: -2;">
-          <img src="./profile-pic.png" class="myPhoto" alt="">
         </div>
-        
-    </div>
-    <div id="about_me" class="View_2 section">
-        <img src="./profile-pic2.png" class="myPhoto" alt="">
-        
-        <div class="main_text">
-            <h1>About Me</h1>
-            <div id="typing-text" class="typing-target"></div>
+
+        <div class="hero-photo">
+          <img src="assets/img/profile1.png" alt="Philip Youssef" class="profile-img" />
         </div>
-    </div>
-    <div id="project_1" class="View_3 section">
-        
-            <!--<div class="horizontal-scroll-wrapper">
-              <img src="./project-1/1.jpg" alt="Dafa Screenshot 1">
-              <img src="./project-1/2.jpg" alt="Dafa Screenshot 2">
-              <img src="./project-1/3.jpg" alt="Dafa Screenshot 3">
-              <img src="./project-1/4.jpg" alt="Dafa Screenshot 4">
-              <img src="./project-1/5.jpg" alt="Dafa Screenshot 5">
-              <img src="./project-1/6.png" alt="Dafa Screenshot 6">
-              <img src="./project-1/7.png" alt="Dafa Screenshot 7">
-              <img src="./project-1/8.png" alt="Dafa Screenshot 8">
-              <img src="./project-1/9.png" alt="Dafa Screenshot 9">
-            </div>-->
-            <div>
+      </div>
+      <div class="scroll-hint" aria-hidden="true">
+        <span>Scroll</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+    </section>
 
-              </div>
-              <div class="demo_frame">
-                <h1>Demo</h1> 
-              <div id="project_1_demo" class="website-demo" style="height: 605px;overflow: hidden;">
-                
-                <img id="demo_1_im_2" src="./iphone-12-mockup.png" alt="" style="right:0;left: auto;">
-                <img id="demo_1_im_1" src="./apple-macbookpro.png" alt="" style="    width: 555px;left: 100%; right: auto; height: auto;box-shadow: 0px 50px 20px -35px rgb(255 255 255 / 12%);border-radius: 0;">
-                <iframe id="demo_1_f_1" src="./dafaa-demo/Dafaa.html" frameborder="0" ></iframe>
-                
-                
-              </div>
-              <div>
-                  
-              </div>
-              <button id="demo_1_b_1" style="cursor: pointer; background: none;color: white;border: 1px solid;font-size: 1.5em;border-radius: 9px;">
-                <i class="fa-solid fa-mobile-screen-button"></i>
-              </button>
-              <button id="demo_1_b_2" style="cursor: pointer; background: none;color: white;border: 1px solid;font-size: 1.5em;border-radius: 9px;">
-                <i class="fa-solid fa-laptop"></i>
-                
-              </button>
-              <script>
-                const demo_1_b_1 = document.getElementById('demo_1_b_1');
-                const demo_1_b_2 = document.getElementById('demo_1_b_2');
-                const demo_1_im_1 = document.getElementById('demo_1_im_1');
-                const demo_1_im_2 = document.getElementById('demo_1_im_2');
-                const demo_1_f_1 = document.getElementById('demo_1_f_1');
-                
-
-                demo_1_b_2.onclick = () =>{
-                  demo_1_im_1.style.transition = '1s cubic-bezier(0.71, -0.02, 0.52, 0.84)';
-                  demo_1_im_2.style.transition = '1s cubic-bezier(0, 0.75, 0.25, 1)';
-
-                  demo_1_im_1.style.left = '-21%';
-                  demo_1_im_2.style.right = '100%';
-                  
-                  demo_1_f_1.style="width: 1100px;transform: scale(0.27);height: 711px;border-radius: 25px;"
-                }
-                demo_1_b_1.onclick = () =>{
-                  demo_1_im_2.style.transition = '1s cubic-bezier(0.71, -0.02, 0.52, 0.84)';
-                  demo_1_im_1.style.transition = '1s cubic-bezier(0, 0.75, 0.25, 1)';
-
-                  demo_1_im_1.style.left = '100%';
-                  demo_1_im_2.style.right = '0';
-                  demo_1_f_1.style=""
-                }
-
-              </script>
-              
+    <!-- ── About ── -->
+    <section id="about" aria-labelledby="about-heading" class="section section-alt">
+      <div class="container">
+        <header class="section-header">
+          <p class="eyebrow">Who I am</p>
+          <h2 id="about-heading">About Me</h2>
+          <div class="accent-bar" aria-hidden="true"></div>
+        </header>
+        <div class="about-grid">
+          <div class="about-body">
+            <p>I'm Philip Youssef, a passionate full-stack developer and IT engineering student at the University of Brescia.</p>
+            <p>With hands-on experience in Python, Django, React, and cloud technologies like AWS, I specialize in building scalable and user-focused web applications. Over the last few years, I've led development teams, designed intuitive interfaces, and deployed production-ready platforms — from e-commerce stores to custom ERP systems integrated with IoT devices.</p>
+            <p>Currently, I work as a Senior Software Engineer at Project SRL (Brescia), where I build Angular + .NET applications with complex financial logic running on AWS.</p>
+            <div class="about-links">
+              <span class="contact-detail">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Brescia, Italy
+              </span>
+              <a href="mailto:philipyoussef55@gmail.com" class="link-accent">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                philipyoussef55@gmail.com
+              </a>
+              <a href="https://www.linkedin.com/in/philip-youssef-aa7639224/" target="_blank" rel="noopener noreferrer" class="link-accent">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                LinkedIn
+              </a>
             </div>
-            
-            
-            <div class="text-area reveal-on-view">
-                <h2>
-                  <img src="./dafaa.png" style="height: 1em;" alt="">
-                  Dafaa Website
-                </h2>
-                <p class="project-description">
-                    The site was built using the Django framework (Python) for the backend, React.js and REST APIs for the frontend, and designed using Figma. The development—both back-end and front-end—was handled by Philip youssef, with UI/UX design by Jozian Sriek.  <br>
-                    <br>
-                    The platform consists of two primary sections: <br>
-                    <br>
-                    Client View: A user-friendly interface that streamlines navigation, ordering, and purchasing, utilizing React and REST APIs for a smooth and efficient experience. <br>
-                    Management View: Accessible to the Dafaa team for managing production, shipping, and financial operations with ease. <br>
-                    Deployed on AWS, the site ensures scalability and reliable performance.  <br>
-                    <br>
-                    Explore more at <a href="https://dafaa.t">dafaa.it</a> ! 
-                </p>
-                <div class="tools">
-                    <div class="tool-icon" data-tooltip="Django">
-                      <img src="./tools/django.png" alt="Django">
-                    </div>
-                    <div class="tool-icon" data-tooltip="React">
-                      <img src="./tools/react.png" alt="React">
-                    </div>
-                    <div class="tool-icon" data-tooltip="MySQL">
-                      <img src="./tools/mysql.png" alt="MySQL">
-                    </div>
-                    <div class="tool-icon" data-tooltip="AWS">
-                      <img src="./tools/aws.png" alt="AWS">
-                    </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Experience ── -->
+    <section id="experience" aria-labelledby="experience-heading" class="section">
+      <div class="container">
+        <header class="section-header">
+          <p class="eyebrow">Career</p>
+          <h2 id="experience-heading">Work Experience</h2>
+          <div class="accent-bar" aria-hidden="true"></div>
+        </header>
+
+        <ol class="timeline" aria-label="Work history">
+          <li class="timeline-item">
+            <div class="timeline-dot timeline-dot--active" aria-hidden="true"></div>
+            <article class="card">
+              <div class="card-top">
+                <div>
+                  <h3 class="card-title">Senior Software Engineer</h3>
+                  <p class="card-company">Project SRL</p>
                 </div>
-                  
+                <div class="card-meta">
+                  <span class="badge-pill badge-pill--active">May 2025 – Present</span>
+                  <p class="card-location">Brescia, Italy</p>
+                </div>
+              </div>
+              <p class="card-desc">Develop and maintain Angular and .NET web applications featuring complex financial algorithms. Manage AWS-hosted services and databases for the platform.</p>
+              <ul class="bullet-list" role="list">
+                <li>Design and implement financial algorithm modules</li>
+                <li>Maintain and scale AWS-hosted backend services</li>
+                <li>Manage production databases</li>
+              </ul>
+              <div class="chips">
+                <span class="chip">Angular</span>
+                <span class="chip">.NET</span>
+                <span class="chip">AWS</span>
+                <span class="chip">SQL</span>
+              </div>
+            </article>
+          </li>
+
+          <li class="timeline-item">
+            <div class="timeline-dot" aria-hidden="true"></div>
+            <article class="card">
+              <div class="card-top">
+                <div>
+                  <h3 class="card-title">IT Engineer</h3>
+                  <p class="card-company">Takwa Company</p>
+                </div>
+                <div class="card-meta">
+                  <span class="badge-pill">2021 – 2023</span>
+                  <p class="card-location">Damascus, Syria</p>
+                </div>
+              </div>
+              <p class="card-desc">Full-stack IT responsibility across infrastructure and custom software for a mid-sized company.</p>
+              <ul class="bullet-list" role="list">
+                <li>Administered LAN networks, workstation hardware and software</li>
+                <li>Microsoft 365 administration</li>
+                <li>Developed and maintained INS software</li>
+                <li>Worked with COBOL on Mainframe</li>
+                <li>Designed and built the company's entire ERP system (see Projects)</li>
+              </ul>
+              <div class="chips">
+                <span class="chip">COBOL</span>
+                <span class="chip">Mainframe</span>
+                <span class="chip">Python</span>
+                <span class="chip">Microsoft 365</span>
+              </div>
+            </article>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ── Projects ── -->
+    <section id="projects" aria-labelledby="projects-heading" class="section section-alt">
+      <div class="container">
+        <header class="section-header">
+          <p class="eyebrow">What I've built</p>
+          <h2 id="projects-heading">Featured Projects</h2>
+          <div class="accent-bar" aria-hidden="true"></div>
+        </header>
+
+        <div class="projects-grid">
+
+          <article class="project-card">
+            <div class="project-img" role="img" aria-label="Screenshot placeholder for Dafaa — E-commerce Platform">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span>Screenshot placeholder</span>
             </div>
-            
-          
-          
-    </div>
-    <div id="project_2" class="View_3 section">
-        <!--
-        <div class="horizontal-scroll-wrapper">
-          <img src="./project-2/1.png" alt="Dafa Screenshot 1">
-          <img src="./project-2/2.png" alt="Dafa Screenshot 2">
-          <img src="./project-2/3.png" alt="Dafa Screenshot 3">
-        </div>-->
-        <div class="demo_frame">
-          <h1>Demo</h1> 
-        <div id="project_2_demo" class="website-demo" style="height: 605px;overflow: hidden;">
-          
-            <img id="demo_2_im_2" src="./iphone-12-mockup.png" alt="" style="right:0;left: auto;">
-            <img id="demo_2_im_1" src="./apple-macbookpro.png" alt="" style="    width: 555px;left: 100%; right: auto; height: auto;box-shadow: 0px 50px 20px -35px rgb(255 255 255 / 12%);border-radius: 0;">
-            <iframe id="demo_2_f_1" src="./diagre-demo/دي أغري.html" frameborder="0" ></iframe>
-            
-            
-          </div>
-          <div>
-              
-          </div>
-          <button id="demo_2_b_1" style="cursor: pointer; background: none;color: white;border: 1px solid;font-size: 1.5em;border-radius: 9px;">
-            <i class="fa-solid fa-mobile-screen-button"></i>
-          </button>
-          <button id="demo_2_b_2" style="cursor: pointer; background: none;color: white;border: 1px solid;font-size: 1.5em;border-radius: 9px;">
-            <i class="fa-solid fa-laptop"></i>
-            
-          </button>
-          <script>
-            const demo_2_b_1 = document.getElementById('demo_2_b_1');
-            const demo_2_b_2 = document.getElementById('demo_2_b_2');
-            const demo_2_im_1 = document.getElementById('demo_2_im_1');
-            const demo_2_im_2 = document.getElementById('demo_2_im_2');
-            const demo_2_f_1 = document.getElementById('demo_2_f_1');
-          
-
-            demo_2_b_2.onclick = () =>{
-              demo_2_im_1.style.transition = '1s cubic-bezier(0.71, -0.02, 0.52, 0.84)';
-              demo_2_im_2.style.transition = '1s cubic-bezier(0, 0.75, 0.25, 1)';
-
-              demo_2_im_1.style.left = '-21%';
-              demo_2_im_2.style.right = '100%';
-              
-              demo_2_f_1.style="width: 1100px;transform: scale(0.27);height: 711px;border-radius: 25px;"
-            }
-            demo_2_b_1.onclick = () =>{
-              demo_2_im_2.style.transition = '1s cubic-bezier(0.71, -0.02, 0.52, 0.84)';
-              demo_2_im_1.style.transition = '1s cubic-bezier(0, 0.75, 0.25, 1)';
-
-              demo_2_im_1.style.left = '100%';
-              demo_2_im_2.style.right = '0';
-              demo_2_f_1.style=""
-            }
-
-          </script>
-          
-        </div>
-       
-        <div class="text-area reveal-on-view">
-            <h2>
-              <img src="./diagri.png" style="height: 1em;" alt="">
-               DiAgri website
-              </h2>
-            <p class="project-description">
-                DiAgri application aims to provide advanced solutions to farmers by accurately and quickly diagnosing plant diseases, which contributes to improving agricultural production and reducing losses. The app also includes more revolutionary features to support farmers. <br>
-                <br>
-                We developed a website using React and Django, with a REST API, where users can download the DiAgri app and read the latest agriculture-related news and articles. The development is led by Philip youssef and Aziz Ali, with design by Jozian Sriek
-            </p>
-            <div class="tools">
-                <div class="tool-icon" data-tooltip="Django"><img src="./tools/django.png" alt="Django"></div>
-                <div class="tool-icon" data-tooltip="React"><img src="./tools/react.png" alt="React"></div>
-                <div class="tool-icon" data-tooltip="MySQL"><img src="./tools/mysql.png" alt="MySQL"></div>
+            <div class="project-body">
+              <div class="project-header">
+                <h3>Dafaa — E-commerce Platform</h3>
+                <span class="project-date">Aug 2024 – Oct 2024</span>
+              </div>
+              <p>A full-featured online store for Dafaa, a group specialising in handmade crochet products. Dual-interface architecture: React storefront for customers and an internal dashboard for managing production, shipping, and finances.</p>
+              <ul class="project-highlights" role="list">
+                <li>Full cloud deployment pipeline on AWS</li>
+                <li>Dual-interface architecture (customer vs. admin)</li>
+                <li>REST API connecting React front-end to Django back-end</li>
+              </ul>
+              <div class="chips">
+                <span class="chip">Django</span>
+                <span class="chip">DRF</span>
+                <span class="chip">React</span>
+                <span class="chip">AWS EB</span>
+                <span class="chip">AWS S3</span>
+                <span class="chip">AWS RDS</span>
+              </div>
+              <div class="project-links">
+                <a href="https://dafaa.it" target="_blank" rel="noopener noreferrer" class="link-accent link-small">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  View Live
+                </a>
+              </div>
             </div>
+          </article>
+
+          <article class="project-card">
+            <div class="project-img" role="img" aria-label="Screenshot placeholder for Takwa ERP System">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span>Screenshot placeholder</span>
+            </div>
+            <div class="project-body">
+              <div class="project-header">
+                <h3>Takwa ERP System</h3>
+                <span class="project-date">2020 – 2021</span>
+              </div>
+              <p>End-to-end ERP system designed and developed solo for Takwa (Syria) to organise, collect, and analyse operational data. Connected Raspberry Pi devices to production machines for real-time monitoring.</p>
+              <ul class="project-highlights" role="list">
+                <li>Connected Raspberry Pi devices to production machines via a custom API</li>
+                <li>Real-time machine data streaming for live monitoring and error tracking</li>
+                <li>Gave managers actionable insight into production efficiency</li>
+              </ul>
+              <div class="chips">
+                <span class="chip">Python</span>
+                <span class="chip">Raspberry Pi</span>
+                <span class="chip">REST API</span>
+                <span class="chip">SQL</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div class="project-img" role="img" aria-label="Screenshot placeholder for DiAgri — Agricultural Diagnosis Platform">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span>Screenshot placeholder</span>
+            </div>
+            <div class="project-body">
+              <div class="project-header">
+                <h3>DiAgri — Agricultural Diagnosis Platform</h3>
+                <span class="project-date">2024</span>
+              </div>
+              <p>Web platform for the DiAgri app, which helps farmers quickly and accurately diagnose plant diseases to improve yields and reduce losses. Scope: promotional + content site where users can download the app and read agriculture news.</p>
+              <ul class="project-highlights" role="list">
+                <li>Promotional and content site for the DiAgri mobile app</li>
+                <li>Agriculture news and article section</li>
+                <li>Team: Philip Youssef &amp; Aziz Ali (dev), Jozian Sriek (design)</li>
+              </ul>
+              <div class="chips">
+                <span class="chip">React</span>
+                <span class="chip">Django</span>
+                <span class="chip">DRF</span>
+              </div>
+            </div>
+          </article>
+
         </div>
-      
-    </div>
-    <div id="skills" class="View_4 section reveal-on-view">
-        <h2>Technical Expertise</h2>
+      </div>
+    </section>
+
+    <!-- ── Skills ── -->
+    <section id="skills" aria-labelledby="skills-heading" class="section">
+      <div class="container">
+        <header class="section-header">
+          <p class="eyebrow">Tech stack</p>
+          <h2 id="skills-heading">Skills</h2>
+          <div class="accent-bar" aria-hidden="true"></div>
+        </header>
+
         <div class="skills-grid">
-          <div class="skill-category">
-            <h3>Frontend</h3>
-            <div class="tools">
-                <div class="tool-icon" data-tooltip="HTML / CSS / JS"><img src="./tools/html-css-js.png" alt="HTML / CSS / JS"></div>
-                <div class="tool-icon" data-tooltip="React.js"><img src="./tools/react.png" alt="React"></div>
-                <div class="tool-icon" data-tooltip="Next.js"><img src="./tools/next.js.png" alt="next.js"></div>
-            </div>
-            
-          </div>
-          <div class="skill-category">
-            <h3>Backend</h3>
-            <div class="tools">
-                <div class="tool-icon" data-tooltip="Django"><img src="./tools/django.png" alt="Django"></div>
-                <div class="tool-icon" data-tooltip="Node.js"><img src="./tools/node.js.png" alt="Node.js"></div>
-                <div class="tool-icon" data-tooltip="Express"><img src="./tools/express.png" alt="Express"></div>
+          <div class="skill-group skill-group--0">
+            <h3>Programming Languages</h3>
+            <div class="chips" role="list" aria-label="Programming Languages">
+              <span class="chip" role="listitem">Python</span>
+              <span class="chip" role="listitem">C#</span>
+              <span class="chip" role="listitem">Java</span>
+              <span class="chip" role="listitem">C++</span>
+              <span class="chip" role="listitem">TypeScript</span>
+              <span class="chip" role="listitem">JavaScript</span>
+              <span class="chip" role="listitem">HTML</span>
+              <span class="chip" role="listitem">CSS</span>
             </div>
           </div>
-          <div class="skill-category">
+          <div class="skill-group skill-group--1">
+            <h3>Frameworks &amp; Libraries</h3>
+            <div class="chips" role="list" aria-label="Frameworks and Libraries">
+              <span class="chip" role="listitem">.NET Framework</span>
+              <span class="chip" role="listitem">Angular</span>
+              <span class="chip" role="listitem">React</span>
+              <span class="chip" role="listitem">Django</span>
+              <span class="chip" role="listitem">Node.js</span>
+              <span class="chip" role="listitem">Flutter</span>
+              <span class="chip" role="listitem">Qt (GUI)</span>
+            </div>
+          </div>
+          <div class="skill-group skill-group--2">
             <h3>Databases</h3>
-            
-            <div class="tools">
-                <div class="tool-icon" data-tooltip="MySQL"><img src="./tools/mysql.png" alt="MySQL"></div>
-                <div class="tool-icon" data-tooltip="PostgreSQL"><img src="./tools/postgresql.svg" alt="PostgreSQL"></div>
-                <div class="tool-icon" data-tooltip="MongoDB"><img src="./tools/mongoDB.png" alt="MongoDB"></div>
+            <div class="chips" role="list" aria-label="Databases">
+              <span class="chip" role="listitem">PostgreSQL</span>
+              <span class="chip" role="listitem">MS SQL Server</span>
+              <span class="chip" role="listitem">PL/SQL</span>
+              <span class="chip" role="listitem">SQLite</span>
+              <span class="chip" role="listitem">SQL</span>
             </div>
           </div>
-          <div class="skill-category">
-            <h3>Cloud & DevOps</h3>
-            <div class="tools">
-                <div class="tool-icon" data-tooltip="AWS"><img src="./tools/aws.png" alt="AWS"></div>
-                <div class="tool-icon" data-tooltip="GitHub Actions"><img src="./tools/github.png" alt="GitHub Actions"></div>
+          <div class="skill-group skill-group--3">
+            <h3>Cloud &amp; DevOps</h3>
+            <div class="chips" role="list" aria-label="Cloud and DevOps">
+              <span class="chip" role="listitem">AWS Elastic Beanstalk</span>
+              <span class="chip" role="listitem">AWS S3</span>
+              <span class="chip" role="listitem">AWS RDS</span>
+              <span class="chip" role="listitem">GitHub</span>
+              <span class="chip" role="listitem">Linux</span>
             </div>
           </div>
-          <div class="skill-category">
-            <h3>Tools</h3>
-            <div class="tools">
-                <div class="tool-icon" data-tooltip="Git"><img src="./tools/git.png" alt="Git"></div>
-                <div class="tool-icon" data-tooltip="Docker"><img src="./tools/docker.png" alt="Docker"></div>
-                <div class="tool-icon" data-tooltip="Postman"><img src="./tools/postman.png" alt="Postman"></div>
-                <div class="tool-icon" data-tooltip="Linux"><img src="./tools/linux.png" alt="Linux"></div>
+          <div class="skill-group skill-group--4">
+            <h3>Architecture &amp; Methodology</h3>
+            <div class="chips" role="list" aria-label="Architecture and Methodology">
+              <span class="chip" role="listitem">REST APIs</span>
+              <span class="chip" role="listitem">Agile</span>
+              <span class="chip" role="listitem">Scrum</span>
             </div>
-            
+          </div>
+          <div class="skill-group skill-group--5">
+            <h3>Networking</h3>
+            <div class="chips" role="list" aria-label="Networking">
+              <span class="chip" role="listitem">CCNA-level (LAN, Routing/Switching)</span>
+            </div>
+          </div>
+          <div class="skill-group skill-group--6">
+            <h3>Other</h3>
+            <div class="chips" role="list" aria-label="Other skills">
+              <span class="chip" role="listitem">COBOL / Mainframe</span>
+              <span class="chip" role="listitem">Microsoft 365 Admin</span>
+              <span class="chip" role="listitem">Raspberry Pi / IoT</span>
+            </div>
           </div>
         </div>
-    </div>
-    <section id="certifications" class="View_5 section">
-        <h2 style="margin-top: 43px;">Certifications & Courses</h2>
-        <ul class="cert-list">
+      </div>
+    </section>
 
-          <li>
-            <h3>Python Advanced</h3>
-            <img src="./University_of_Michigan_Logo.png" alt="University_of_Michigan_Logo">  
-            <span class="cert-date">Completed: 2021</span>
-          </li>
+    <!-- ── Education & Certifications ── -->
+    <section id="education" aria-labelledby="education-heading" class="section section-alt">
+      <div class="container">
+        <header class="section-header">
+          <p class="eyebrow">Academic background</p>
+          <h2 id="education-heading">Education &amp; Certifications</h2>
+          <div class="accent-bar" aria-hidden="true"></div>
+        </header>
 
-          <li>
-            <h3>CCNA</h3>
-            <img src="./Coursera-Log.png" alt="Coursera">
-            <span class="cert-date">Completed: 2021</span>
-          </li>
+        <div class="edu-grid">
+          <!-- Education timeline -->
+          <div>
+            <h3 class="subsection-title">Education</h3>
+            <ol class="timeline" aria-label="Education history">
+              <li class="timeline-item">
+                <div class="timeline-dot timeline-dot--active" aria-hidden="true"></div>
+                <div class="card card--compact">
+                  <div class="card-top">
+                    <div>
+                      <h4 class="card-title card-title--sm"><a href="https://www.unibs.it/it" target="_blank" rel="noopener noreferrer" class="link-hover">University of Brescia</a></h4>
+                      <p class="card-role">BSc Information Technology Engineering</p>
+                    </div>
+                    <span class="badge-pill badge-pill--active">2023 – Present</span>
+                  </div>
+                </div>
+              </li>
+              <li class="timeline-item">
+                <div class="timeline-dot" aria-hidden="true"></div>
+                <div class="card card--compact">
+                  <div class="card-top">
+                    <div>
+                      <h4 class="card-title card-title--sm"><a href="https://svuonline.org" target="_blank" rel="noopener noreferrer" class="link-hover">Syrian Virtual University</a></h4>
+                      <p class="card-role">Information Technology Engineering</p>
+                    </div>
+                    <span class="badge-pill">2020 – 2023</span>
+                  </div>
+                </div>
+              </li>
+              <li class="timeline-item">
+                <div class="timeline-dot" aria-hidden="true"></div>
+                <div class="card card--compact">
+                  <div class="card-top">
+                    <div>
+                      <h4 class="card-title card-title--sm">Syrian Secondary School</h4>
+                      <p class="card-role">General Secondary Education Certificate</p>
+                    </div>
+                    <span class="badge-pill">2018 – 2019</span>
+                  </div>
+                </div>
+              </li>
+            </ol>
+          </div>
 
-          <li>
-            <h3>AI For Everyone</h3>
-            <img src="./deeplearning.ai.jpg" alt="deeplearning.ai">
-            <span class="cert-date">Completed: 2023</span>
-          </li>
-
-          <li>
-            <h3>AWS Fundamentals Specialization</h3>
-            <img src="./aws.png" alt="aws">
-            <span class="cert-date">Completed: 2024</span>
-          </li>
-
-          <li>
-            <h3>Developing Back-End Apps with Node.js and Express</h3>
-            <img src="./ibm.svg" alt="ibm">
-            <span class="cert-date">Completed: 2024</span>
-          </li>
-
-          <li>
-            <h3>Node.js & MongoDB: Developing Back-end Database Applications</h3>
-            <img src="./ibm.svg" alt="ibm">
-            <span class="cert-date">Completed: 2024</span>
-          </li>
-
-          
-          <!-- Add more as needed -->
-        </ul>
-      </section>
-    
-      <section id="experiences" class="View_6 section experiences-container">
-        
-        <div id="experiences-1" class="experience-page section" style="padding: 0 !important;" >
-          <ul>
-            <li>
-              <h1 style="margin-top: 55px 0;">Experiences</h1>
-              <div style="display: flex;">
-                
-                <span>1</span>
-                <h1>Full-Stack Developer / Team Lead</h1>
-              </div>
-              <h3>Cloudpay</h3>
-              <h5>08/2022 – 10/2024</h5>
-              <h4>City: UK, London (Remote)</h4>
-              <h5 class="experience-text">
-                • Promoted to full-stack developer and team lead, responsible for managing the web development team.<br>
-                • Designed intuitive, responsive front-end interfaces using modern JavaScript frameworks.<br>
-                • Oversaw deployment, monitoring, and maintenance of services in AWS, ensuring scalability and uptime.  <br>
-                • Led sprint planning, code reviews, and architectural decisions to streamline team workflows.  <br>
-                • Drove continuous improvement, mentoring junior developers and championing best practices in clean code and DevOps.  <br>
-              </h5>
-            </li>
-          </ul>
+          <!-- Certifications table -->
+          <div>
+            <h3 class="subsection-title">Certifications</h3>
+            <div class="table-wrapper">
+              <table aria-label="Certifications">
+                <thead>
+                  <tr>
+                    <th scope="col">Year</th>
+                    <th scope="col">Course</th>
+                    <th scope="col" class="text-right">Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="year-cell">2020</td>
+                    <td><span class="cert-name">IBM Mainframe Developer Professional Certificate (7 courses)</span><span class="cert-provider">IBM / Coursera</span></td>
+                    <td class="text-right score-dash">—</td>
+                  </tr>
+                  <tr>
+                    <td class="year-cell">2021</td>
+                    <td><span class="cert-name">Python Advanced</span><span class="cert-provider">Coursera — University of Michigan</span></td>
+                    <td class="text-right score-pass">100%</td>
+                  </tr>
+                  <tr>
+                    <td class="year-cell">2021</td>
+                    <td><span class="cert-name">CCNA</span><span class="cert-provider">Coursera</span></td>
+                    <td class="text-right score-pass">100%</td>
+                  </tr>
+                  <tr>
+                    <td class="year-cell">2023</td>
+                    <td><span class="cert-name">AI For Everyone</span><span class="cert-provider">Coursera — DeepLearning.AI</span></td>
+                    <td class="text-right score-pass">90%</td>
+                  </tr>
+                  <tr>
+                    <td class="year-cell">2024</td>
+                    <td><span class="cert-name">AWS Fundamentals Specialization</span><span class="cert-provider">Coursera — DeepLearning.AI</span></td>
+                    <td class="text-right score-pass">100%</td>
+                  </tr>
+                  <tr>
+                    <td class="year-cell">2024</td>
+                    <td>
+                      <a href="https://coursera.org/share/0ee70ba77d9b9dae3365a1468a9b511e" target="_blank" rel="noopener noreferrer" class="cert-link">
+                        <span class="cert-name">Developing Back-End Apps with Node.js and Express</span>
+                      </a>
+                      <span class="cert-provider">Coursera — IBM</span>
+                    </td>
+                    <td class="text-right score-pass">95%</td>
+                  </tr>
+                  <tr>
+                    <td class="year-cell">2024</td>
+                    <td>
+                      <a href="https://www.coursera.org/account/accomplishments/records/FAX3S40W1D1Q" target="_blank" rel="noopener noreferrer" class="cert-link">
+                        <span class="cert-name">Node.js &amp; MongoDB: Developing Back-end Database Applications</span>
+                      </a>
+                      <span class="cert-provider">Coursera — IBM</span>
+                    </td>
+                    <td class="text-right score-pass">94%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
+      </div>
+    </section>
 
-      </section>
-      <section id="experiences-2" class="View_6 section experiences-container">
-        
-      
-        <div class="experience-page">
-          <ul>
-            <li>
-              <div style="display: flex;">
-                <span>2</span>
-                <h1>Backend Developer</h1>
+    <!-- ── Languages ── -->
+    <section id="languages" aria-labelledby="languages-heading" class="section">
+      <div class="container">
+        <header class="section-header">
+          <p class="eyebrow">Communication</p>
+          <h2 id="languages-heading">Languages</h2>
+          <div class="accent-bar" aria-hidden="true"></div>
+        </header>
+
+        <div class="languages-list">
+          <div class="lang-item">
+            <div class="lang-top">
+              <div class="lang-name-group">
+                <span class="lang-name">Arabic</span>
+                <span class="badge-pill badge-pill--active">Native</span>
               </div>
-              <h3>Cloudpay</h3>
-              <h5>02/2021 – 08/2022</h5>
-              <h4>City: UK, London (Remote)</h4>
-              <h5 class="experience-text">
-                • Developed scalable, cloud-native backend services for global payroll and payments solutions using Node.js, SQL and NoSQL databases.  <br>
-                • Built secure and efficient RESTful APIs, ensuring compliance with industry standards in the FinTech space.  <br>
-                • Followed and implemented high security standards, including PCI DSS and other data protection protocols.  <br>
-                • Collaborated closely with front-end developers and product teams to deliver user-centric features.  <br>
-                • Contributed to CI/CD pipelines and integrated DevOps practices to improve reliability and deployment speed.  <br>
-                • Worked with cloud platforms such AWS  <br>
-              </h5>
-            </li>
-          </ul>
-        </div>
+              <span class="lang-label">Native</span>
+            </div>
+            <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" aria-label="Arabic proficiency: Native">
+              <div class="progress-fill" style="width:100%"></div>
+            </div>
+          </div>
 
-      </section> 
-      <section id="experiences-3" class="View_6 section experiences-container">
-        
-
-        <div class="experience-page">
-            <div class="experience-page section" style="padding: 0 !important;" >
-          <ul>
-            <li>
-              <div style="display: flex;">
-                <span>3</span>
-                <h1>IT</h1>
+          <div class="lang-item">
+            <div class="lang-top">
+              <div class="lang-name-group">
+                <span class="lang-name">English</span>
+                <span class="badge-pill badge-pill--active">C1</span>
               </div>
-              <h3>Takwa company</h3>
-              <h5>2021 – 2023</h5>
-              <h4>City: Syria, Damascus</h4>
-              <h5 class="experience-text">
-                responsible for LAN network, PCs (software and hardware), Microsoft 365 admin and applying INS software 
-              </h5>
-            </li>
-          </ul>
-        </div>
-      </section>
+              <span class="lang-label">C1 — Advanced</span>
+            </div>
+            <div class="progress-bar" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" aria-label="English proficiency: C1 Advanced">
+              <div class="progress-fill" style="width:85%"></div>
+            </div>
+            <div class="lang-skills">
+              <span>Listening</span>
+              <span>Reading</span>
+              <span>Writing</span>
+              <span>Spoken Production</span>
+              <span>Spoken Interaction</span>
+            </div>
+          </div>
 
-
-      <section id="papers" class="View_6 section experiences-container">
-        
-        <div id="papers-1" class="experience-page section" style="padding: 0 !important;" >
-          <ul>
-            <li>
-              <h1 style="margin-top: 55px 0;">Papers</h1>
-              <div style="display: flex;">
-                
-                <span>1</span>
-                <h1>Node.js vs Django Performance Comparison</h1>
+          <div class="lang-item">
+            <div class="lang-top">
+              <div class="lang-name-group">
+                <span class="lang-name">Italian</span>
+                <span class="badge-pill badge-pill--active">B2</span>
               </div>
-              <h3>Experimental Study</h3>
-              <h5>2025</h5>
-              <h5 class="experience-text">
-                Node.js and Django are two of the most widely used backend technologies in web development. 
-                This study aims to compare their performance by measuring key parameters such as processing speed, 
-                response time, memory usage, CPU usage, and request handling capacity. The goal is to provide quantitative data 
-                to help developers choose the technology that best suits their needs. <br>
-                <a target="_blank" class="read_more_button" href="https://deadpan-dove-495.notion.site/Node-js-vs-Django-Performance-Comparison-An-Experimental-Study-1bda55c875378038bbaaf11603dedb80">Read more</a>
-              </h5>
-            </li>
-          </ul>
+              <span class="lang-label">B2 — Upper Intermediate</span>
+            </div>
+            <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" aria-label="Italian proficiency: B2 Upper Intermediate">
+              <div class="progress-fill" style="width:70%"></div>
+            </div>
+            <div class="lang-skills">
+              <span>Listening</span>
+              <span>Reading</span>
+              <span>Writing</span>
+              <span>Spoken Production</span>
+              <span>Spoken Interaction</span>
+            </div>
+          </div>
         </div>
+      </div>
+    </section>
 
-      </section>
+    <!-- ── Contact ── -->
+    <section id="contact" aria-labelledby="contact-heading" class="section section-alt">
+      <div class="container">
+        <header class="section-header">
+          <p class="eyebrow">Get in touch</p>
+          <h2 id="contact-heading">Contact</h2>
+          <div class="accent-bar" aria-hidden="true"></div>
+        </header>
 
-      <section id="contact" class="View_7 section contact-section">
-        <div class="contact-container">
-          <h2>Let’s Get in Touch</h2>
-          <p class="contact-intro">Have a project, opportunity, or just want to say hi? Reach out!</p>
-      
+        <div class="contact-grid">
           <div class="contact-info">
-            <p><strong>Email:</strong> <a href="mailto:philipyoussef55@gmail.com">philipyoussef55@gmail.com</a></p>
-            <p><strong>Phone:</strong> <a href="tel:+393298514077">+39 329 851 4077</a></p>
-            <p><strong>Location:</strong> Brescia, Italy (Remote-friendly)</p>
-            <div class="contact-links">
-
-              <a href="https://github.com/p-youssef/"  class="tool-icon" data-tooltip="GitHub"><img src="./tools/github.png" alt="GitHub"></a>
-              <a href="https://www.linkedin.com/in/philip-youssef-aa7639224/" class="tool-icon" data-tooltip="LinkedIn"><img src="./linkedin.png" alt="linkedin"></a>
-              
+            <p>Have a project in mind or want to chat? Feel free to reach out via any of the channels below or send a message directly.</p>
+            <div class="contact-items">
+              <a href="mailto:philipyoussef55@gmail.com" class="contact-item">
+                <div class="contact-icon" aria-hidden="true">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </div>
+                <div>
+                  <p class="contact-item-label">Email</p>
+                  <p class="contact-item-value">philipyoussef55@gmail.com</p>
+                </div>
+              </a>
+              <a href="tel:+393298514077" class="contact-item">
+                <div class="contact-icon" aria-hidden="true">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.2 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6.04 6.04l.97-.97a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                </div>
+                <div>
+                  <p class="contact-item-label">Phone</p>
+                  <p class="contact-item-value">+39 329 851 4077</p>
+                </div>
+              </a>
+              <a href="https://www.linkedin.com/in/philip-youssef-aa7639224/" target="_blank" rel="noopener noreferrer" class="contact-item">
+                <div class="contact-icon" aria-hidden="true">
+                  <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                </div>
+                <div>
+                  <p class="contact-item-label">LinkedIn</p>
+                  <p class="contact-item-value">philip-youssef-aa7639224</p>
+                </div>
+              </a>
+              <div class="contact-item contact-item--static">
+                <div class="contact-icon" aria-hidden="true">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </div>
+                <div>
+                  <p class="contact-item-label">Location</p>
+                  <p class="contact-item-value">Brescia, Italy</p>
+                </div>
+              </div>
             </div>
           </div>
-      
 
+          <!-- Contact form -->
+          <!-- <div class="card contact-form-wrap">
+            <div id="form-success" class="form-success" hidden>
+              <div class="success-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <h3>Message sent!</h3>
+              <p>Thanks for reaching out. I'll get back to you soon.</p>
+              <button id="form-reset" class="link-accent" style="background:none;border:none;cursor:pointer;margin-top:.5rem;">Send another message</button>
+            </div>
+            <form id="contact-form" novalidate>
+              <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" autocomplete="name" required placeholder="Your name" />
+              </div>
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" autocomplete="email" required placeholder="you@example.com" />
+              </div>
+              <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" rows="5" required placeholder="Tell me about your project..."></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary btn-full">Send Message</button>
+              <p class="form-note">Form submission requires a backend integration (e.g. Formspree or a server-side handler).</p>
+            </form>
+          </div> -->
         </div>
-      </section>
-      
+      </div>
+    </section>
 
+  </main>
 
-      
-      
+  <!-- ── Footer ── -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <p>&copy; <span id="footer-year"></span> Philip Youssef. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="mailto:philipyoussef55@gmail.com" aria-label="Email Philip Youssef" class="icon-btn">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/in/philip-youssef-aa7639224/" target="_blank" rel="noopener noreferrer" aria-label="Philip Youssef on LinkedIn" class="icon-btn">
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        </a>
+        <a href="#hero" aria-label="Back to top" class="icon-btn">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
 
+  <script src="main.js"></script>
 </body>
-  <script src="./main.js"></script>
 </html>

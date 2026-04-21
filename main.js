@@ -1,185 +1,86 @@
-document.addEventListener("DOMContentLoaded", () => {
-  // === Title Reveal on Scroll ===
-  const navText = document.querySelector(".title-block");
-  window.addEventListener("scroll", () => {
-    navText.classList.toggle("hidden", window.scrollY <= 500);
-  });
+/* ── Dark mode ── */
+const html        = document.documentElement
+const themeToggle = document.getElementById('theme-toggle')
 
-  // === Remove Blur from Profile Image ===
-  document.querySelector(".myPhoto")?.classList.add("remove-blur");
+const saved = localStorage.getItem('theme')
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+const isDark = saved === 'dark' || (!saved && prefersDark)
 
-  // === Sections Setup ===
-  const sectionIds = [
-    "#first", "#about_me", "#project_1", "#project_2", "#skills", "#certifications",
-    "#experiences", "#experiences-1", "#experiences-2", "#experiences-3","#papers", "#papers-1", "#contact"
-  ];
-  const sections = sectionIds.map(id => document.querySelector(id)).filter(Boolean);
-  const navLinks = document.querySelectorAll(".v_nav a");
+if (isDark) html.classList.add('dark')
+updateToggleLabel()
 
-  let isScrolling = false;
-  let currentIndex = 0;
-  const isWideScreen = window.innerWidth >= 768;
+themeToggle.addEventListener('click', () => {
+  html.classList.toggle('dark')
+  localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light')
+  updateToggleLabel()
+})
 
-  function scrollToSection(index) {
-    isScrolling = true;
-    sections[index]?.scrollIntoView({ behavior: "smooth", block: "start" });
-    updateActiveLink(index);
-    setTimeout(() => { isScrolling = false; }, 1000);
-  }
+function updateToggleLabel() {
+  const dark = html.classList.contains('dark')
+  themeToggle.setAttribute('aria-label', `Switch to ${dark ? 'light' : 'dark'} mode`)
+}
 
-  function updateActiveLink(index) {
-    navLinks.forEach(link => link.classList.remove("active"));
-    navLinks[index]?.classList.add("active");
-  }
+/* ── Navbar scroll shadow ── */
+const navbar = document.getElementById('navbar')
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 16)
+}, { passive: true })
 
-  function updateActiveLinkByHref(href) {
-    navLinks.forEach(link => link.classList.remove("active"));
-    document.querySelector(`.v_nav a[href="${href}"]`)?.classList.add("active");
-  }
+/* ── Mobile menu ── */
+const menuToggle  = document.getElementById('menu-toggle')
+const mobileMenu  = document.getElementById('mobile-menu')
 
-  // === Scroll Navigation (Wheel) for Wide Screens ===
-  if (isWideScreen) {
-    window.addEventListener("wheel", (e) => {
-      const section = sections[currentIndex];
-      const isExperiences = section?.id === "experiences" || section?.id === "experiences";
+menuToggle.addEventListener('click', () => {
+  const open = mobileMenu.classList.toggle('open')
+  menuToggle.setAttribute('aria-expanded', String(open))
+  mobileMenu.setAttribute('aria-hidden', String(!open))
+})
 
-      if (isExperiences) {
-        const atTop = section.scrollTop === 0;
-        const atBottom = section.scrollHeight - section.clientHeight === section.scrollTop;
-        if ((e.deltaY < 0 && !atTop) || (e.deltaY > 0 && !atBottom)) return;
-      }
+// Close mobile menu when a link is clicked
+mobileMenu.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    mobileMenu.classList.remove('open')
+    menuToggle.setAttribute('aria-expanded', 'false')
+    mobileMenu.setAttribute('aria-hidden', 'true')
+  })
+})
 
-      e.preventDefault();
-      if (isScrolling) return;
+/* ── Active nav link ── */
+const sections = document.querySelectorAll('main section[id]')
+const navLinks = document.querySelectorAll('.nav-links a, .mobile-menu a')
 
-      if (e.deltaY > 0 && currentIndex < sections.length - 1) currentIndex++;
-      else if (e.deltaY < 0 && currentIndex > 0) currentIndex--;
-
-      scrollToSection(currentIndex);
-    }, { passive: false });
-  }
-
-  // === Nav Link Click Support ===
-  navLinks.forEach((link, i) => {
-    link.addEventListener("click", (e) => {
-      e.preventDefault();
-      const targetId = link.getAttribute("href");
-      const index = sections.findIndex(sec => `#${sec.id}` === targetId);
-      if (index !== -1) {
-        currentIndex = index;
-        scrollToSection(index);
-      }
-    });
-  });
-
-  // === Section Visibility Observer for Active Link ===
-  const sectionObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-  
-      const id = entry.target.id;
-      const matchingLink = document.querySelector(`.v_nav a[href="#${id}"]`);
-  
-      if (matchingLink) {
-        updateActiveLinkByHref(`#${id}`);
-        currentIndex = Array.from(sections).findIndex(s => s.id === id);
-      }
-    });
-  }, { threshold: 0.6 });
-  
-
-  sections.forEach(section => sectionObserver.observe(section));
-
-  // === Typing Effect in About Section ===
-  const aboutSection = document.querySelector(".View_2");
-  const typingTarget = document.getElementById("typing-text");
-  const aboutText = [
-    "I’m Philip Youssef, a passionate full-stack developer and current IT engineering student at the University of Brescia.",
-    "With hands-on experience in Python, Django, React, and cloud technologies like AWS, I specialize in building scalable and user-focused web applications.",
-    "Over the last few years, I’ve led development teams, designed intuitive interfaces, and deployed production-ready platforms."
-  ];
-
-  let hasTyped = false;
-
-  function typeText(lines, element, charDelay = 5, lineDelay = 40) {
-    let line = 0, char = 0;
-    element.innerHTML = "";
-
-    function typeLine() {
-      if (line >= lines.length) return;
-      const p = document.createElement("p");
-      element.appendChild(p);
-
-      function typeChar() {
-        if (char < lines[line].length) {
-          p.innerHTML += lines[line][char++];
-          setTimeout(typeChar, charDelay);
-        } else {
-          char = 0;
-          line++;
-          setTimeout(typeLine, lineDelay);
-        }
-      }
-      typeChar();
-    }
-
-    typeLine();
-  }
-
-  new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting && !hasTyped) {
-        hasTyped = true;
-        typeText(aboutText, typingTarget);
-      }
-    });
-  }, { threshold: 0.6 }).observe(aboutSection);
-
-  // === Reveal on View Effect ===
-  const revealElements = document.querySelectorAll(".reveal-on-view");
-  const revealObserver = new IntersectionObserver((entries) => {
+if (location.pathname.endsWith('lab.html')) {
+  // On the Lab page: mark "Lab" active statically; skip scroll-based detection
+  navLinks.forEach(link => link.classList.toggle('active', link.getAttribute('href') === 'lab.html'))
+} else {
+  const sectionObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        entry.target.classList.add("revealed");
+        navLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id)
+        })
       }
-    });
-  }, { threshold: 0.3 });
+    })
+  }, { rootMargin: '-40% 0px -55% 0px' })
+  sections.forEach(s => sectionObserver.observe(s))
+}
 
-  revealElements.forEach(el => {
-    el.querySelectorAll("img").forEach((img, i) => {
-      img.style.setProperty("--i", i);
-    });
-    revealObserver.observe(el);
-  });
+/* ── Scroll-reveal ── */
+const reveals = document.querySelectorAll(
+  '.section-header, .about-grid, .timeline-item, .project-card, .skill-group, .lang-item, .contact-grid, .edu-grid, .lab-card'
+)
+reveals.forEach(el => el.classList.add('reveal'))
 
-  // === iFrame Animation on Visibility ===
-  const iframeAnimations = [
-    { sectionId: "project_1", demoId: "project_1_demo" },
-    { sectionId: "project_2", demoId: "project_2_demo" }
-  ];
-
-  iframeAnimations.forEach(({ sectionId, demoId }) => {
-    const section = document.getElementById(sectionId);
-    const iframe = document.querySelector(`#${demoId} iframe`);
-    const image = document.querySelector(`#${demoId} img`);
-
-    if (section && iframe && image) {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          const toggle = entry.isIntersecting ? "add" : "remove";
-          iframe.classList[toggle]("phone_on");
-          image.classList[toggle]("phone_on");
-        });
-      }, { threshold: 0.6 });
-
-      observer.observe(section);
+const revealObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible')
+      revealObserver.unobserve(entry.target)
     }
-  });
+  })
+}, { threshold: 0.1 })
 
-  // === Debug Placeholder ===
-  const certifications = document.getElementById("certifications");
-  if (certifications) {
-    console.log("Certifications section is loaded.");
-  }
-});
+reveals.forEach(el => revealObserver.observe(el))
 
+/* ── Footer year ── */
+document.getElementById('footer-year').textContent = new Date().getFullYear()
