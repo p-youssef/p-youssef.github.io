@@ -464,6 +464,79 @@ main { max-width: 1300px; margin: 0 auto; padding: 32px 24px 60px; }
 }
 
 .toast.show { transform: translateY(0); opacity: 1; }
+
+/* ── Row full-screen viewer ── */
+.row-fs-overlay {
+  position: fixed; inset: 0; z-index: 3000;
+  background: rgba(0,0,0,0.65);
+  display: none; align-items: center; justify-content: center;
+}
+.row-fs-overlay.visible { display: flex; }
+
+.row-fs-box {
+  background: white; border-radius: 14px; padding: 24px 28px;
+  width: 95vw; max-height: 90vh;
+  overflow: auto;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.35);
+  display: flex; flex-direction: column; align-items: center; gap: 18px;
+}
+
+.row-fs-header {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+}
+
+.row-fs-label { font-size: 1.15rem; font-weight: 700; color: #1b4332; }
+
+.row-fs-close {
+  background: none; border: none; cursor: pointer;
+  color: #999; font-size: 1.1rem; padding: 4px 9px; border-radius: 4px; line-height: 1;
+}
+.row-fs-close:hover { background: #f0f0f0; color: #333; }
+
+.row-fs-table-wrap { width: 100%; overflow-x: auto; }
+
+/* Dimensions are set by JS to ensure square cells at 95vw */
+.row-fs-cell {
+  border: 1px solid #d8cfc2; text-align: center; vertical-align: middle;
+  background: #ffffff; padding: 0;
+}
+.row-fs-cell svg { display: block; margin: auto; color: #1b4332; }
+.row-fs-num-cell {
+  background: #f5f0ea; color: #aaa;
+  text-align: center; border: 1px solid #e8dfcf; font-weight: 500;
+  vertical-align: middle;
+}
+.row-fs-row-label {
+  background: #f0faf5; font-weight: 700; color: #2d6a4f;
+  text-align: center; vertical-align: middle; border: 1px solid #c3ddd4;
+}
+.row-fs-corner { border: none; background: transparent; }
+
+@media print {
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  header, #toast, #picker-overlay, #stitch-picker { display: none !important; }
+  .page { display: none !important; }
+  .page.active { display: block !important; }
+  .page-header .btn-group { display: none !important; }
+  .editor-toolbar { display: none !important; }
+
+  body { background: white; }
+  main { padding: 8px; max-width: none; margin: 0; }
+
+  .grid-wrapper { border: none !important; padding: 0 !important; overflow: visible !important; }
+  .grid-zoom-box { transform: none !important; width: auto !important; height: auto !important; }
+
+  /* Collapse insert-col zones to zero width so the table stays aligned */
+  .insert-col-zone, .insert-col-spacer {
+    width: 0 !important; min-width: 0 !important;
+    max-width: 0 !important; padding: 0 !important;
+    border: none !important; overflow: hidden !important;
+  }
+  .insert-row-zone { display: none !important; }
+
+  .grid-table tr { page-break-inside: avoid; }
+}
 </style>
 </head>
 <body>
@@ -502,6 +575,7 @@ main { max-width: 1300px; margin: 0 auto; padding: 32px 24px 60px; }
         <button class="btn btn-secondary btn-sm" id="btn-zoom-out-view" title="Zoom out (−)">−</button>
         <span id="zoom-label-view" style="font-size:0.8rem;color:#555;min-width:38px;text-align:center">100%</span>
         <button class="btn btn-secondary btn-sm" id="btn-zoom-in-view" title="Zoom in (+)">+</button>
+        <button class="btn btn-secondary" id="btn-export-pdf">Export PDF</button>
         <button class="btn btn-primary" id="btn-edit-view">Edit</button>
       </div>
     </div>
@@ -551,6 +625,19 @@ main { max-width: 1300px; margin: 0 auto; padding: 32px 24px 60px; }
     <button class="stitch-picker-close" id="btn-close-picker">✕</button>
   </div>
   <div id="stitch-options" class="stitch-options"></div>
+</div>
+
+<!-- Row full-screen viewer -->
+<div id="row-fs-overlay" class="row-fs-overlay">
+  <div class="row-fs-box">
+    <div class="row-fs-header">
+      <span id="row-fs-label" class="row-fs-label"></span>
+      <button class="row-fs-close" id="btn-row-fs-close">✕</button>
+    </div>
+    <button class="btn btn-secondary" id="btn-row-fs-up">↑ Row above</button>
+    <div class="row-fs-table-wrap" id="row-fs-cells"></div>
+    <button class="btn btn-secondary" id="btn-row-fs-down">↓ Row below</button>
+  </div>
 </div>
 
 <div id="toast" class="toast"></div>
@@ -673,7 +760,12 @@ let currentPage    = 'designs';
 let viewDesignName = null;
 let editDesignName = null;   // null = new design
 let editState      = null;   // {name, rows:[{direction, cells:[]}]}
+let viewState      = null;   // read-only copy for the view page
 let pickerContext  = null;   // {rowIdx, colIdx}
+
+// Row full-screen viewer state
+let rowFsRowIdx      = null;
+let rowFsContainerId = null;
 
 // Single-row highlight (one per container)
 const highlightedRows = { 'edit-grid-wrapper': null, 'view-grid-wrapper': null };
@@ -943,10 +1035,10 @@ async function viewDesign(name) {
   const handle = fileHandles.get(name);
   if (!handle) return;
   viewDesignName = name;
-  const design = csvToDesign(await readFile(handle));
-  document.getElementById('view-title').textContent = design.name;
-  renderGrid('view-grid-wrapper', design, false);
-  renderLegend('view-legend', design);
+  viewState = csvToDesign(await readFile(handle));
+  document.getElementById('view-title').textContent = viewState.name;
+  renderGrid('view-grid-wrapper', viewState, false);
+  renderLegend('view-legend', viewState);
   navigate('view');
 }
 
@@ -1169,10 +1261,12 @@ function renderGrid(containerId, design, editable) {
       // Toggle: clicking same row again clears it
       if (prev === r) {
         highlightedRows[containerId] = null;
+        closeRowFullscreen();
       } else {
         highlightedRows[containerId] = r;
         tr.classList.add('grid-row-highlighted');
         hlBtn.classList.add('active');
+        openRowFullscreen(r, containerId);
       }
     });
     hlTd.appendChild(hlBtn);
@@ -1527,6 +1621,147 @@ async function confirmDelete(name) {
 }
 
 // ─────────────────────────────────────────────
+// ROW FULL-SCREEN VIEWER
+// ─────────────────────────────────────────────
+function openRowFullscreen(rowIdx, containerId) {
+  rowFsRowIdx      = rowIdx;
+  rowFsContainerId = containerId;
+  renderRowFS();
+  document.getElementById('row-fs-overlay').classList.add('visible');
+}
+
+function closeRowFullscreen() {
+  document.getElementById('row-fs-overlay').classList.remove('visible');
+}
+
+function renderRowFS() {
+  const design = rowFsContainerId === 'edit-grid-wrapper' ? editState : viewState;
+  if (!design) return;
+  const totalRows = design.rows.length;
+  const row       = design.rows[rowFsRowIdx];
+  const rowNum    = totalRows - rowFsRowIdx;
+
+  document.getElementById('row-fs-label').textContent = `Row ${rowNum}  (${row.direction})`;
+  document.getElementById('btn-row-fs-up').disabled   = rowFsRowIdx === 0;
+  document.getElementById('btn-row-fs-down').disabled = rowFsRowIdx === totalRows - 1;
+
+  // ── Compute square cell size to fill 95vw ──
+  const BOX_PAD = 56; // 28px left + 28px right padding
+  const numCols = row.cells.length + 2; // data cells + left label + right label
+  const cellSize = Math.floor((window.innerWidth * 0.95 - BOX_PAD) / numCols);
+  const svgSize  = Math.floor(cellSize * 0.76);
+  const hdrH     = Math.max(16, Math.floor(cellSize * 0.36));
+  const labelFs  = Math.max(10, Math.floor(cellSize * 0.28));
+  const numFs    = Math.max(9,  Math.floor(cellSize * 0.22));
+
+  const sqStyle  = `width:${cellSize}px;min-width:${cellSize}px;height:${cellSize}px;font-size:${labelFs}px;`;
+  const hdrStyle = `width:${cellSize}px;min-width:${cellSize}px;height:${hdrH}px;font-size:${numFs}px;`;
+
+  const wrap = document.getElementById('row-fs-cells');
+  wrap.innerHTML = '';
+
+  const table = document.createElement('table');
+  table.style.cssText = 'border-collapse:collapse;table-layout:fixed;';
+
+  // ── Column-number header ──
+  const thead = table.createTHead();
+  const hrow  = thead.insertRow();
+
+  const mkCorner = () => {
+    const th = document.createElement('th');
+    th.className = 'row-fs-corner'; th.style.cssText = hdrStyle; return th;
+  };
+  hrow.appendChild(mkCorner());
+  for (let c = 0; c < row.cells.length; c++) {
+    const th = document.createElement('th');
+    th.className = 'row-fs-num-cell'; th.style.cssText = hdrStyle;
+    th.textContent = c + 1;
+    hrow.appendChild(th);
+  }
+  hrow.appendChild(mkCorner());
+
+  // ── Helper: render one data row ──
+  const tbody = table.createTBody();
+  const addRow = (rowData, highlight) => {
+    const tr = tbody.insertRow();
+    if (highlight) tr.style.background = '#fffde7';
+
+    const mkLabel = () => {
+      const td = tr.insertCell();
+      td.className = 'row-fs-row-label'; td.style.cssText = sqStyle;
+      td.textContent = rowData.direction; return td;
+    };
+    mkLabel();
+    for (const cellId of rowData.cells) {
+      const td  = tr.insertCell();
+      td.className = 'row-fs-cell'; td.style.cssText = sqStyle;
+      const sid = STITCHES[cellId] ? cellId : 'empty';
+      td.innerHTML = STITCHES[sid].svg;
+      td.title     = STITCHES[sid].name;
+      const svg = td.querySelector('svg');
+      if (svg) { svg.style.width = svgSize + 'px'; svg.style.height = svgSize + 'px'; }
+    }
+    mkLabel();
+  };
+
+  // Selected row (highlighted) + row below (if exists)
+  addRow(row, true);
+  if (rowFsRowIdx + 1 < totalRows) addRow(design.rows[rowFsRowIdx + 1], false);
+
+  wrap.appendChild(table);
+}
+
+function navigateRowFS(delta) {
+  const design = rowFsContainerId === 'edit-grid-wrapper' ? editState : viewState;
+  if (!design) return;
+  const newIdx = rowFsRowIdx + delta;
+  if (newIdx < 0 || newIdx >= design.rows.length) return;
+
+  // Move DOM highlight
+  const wrapper = document.getElementById(rowFsContainerId);
+  const prevTr  = wrapper.querySelector(`[data-row-idx="${rowFsRowIdx}"]`);
+  if (prevTr) {
+    prevTr.classList.remove('grid-row-highlighted');
+    prevTr.querySelector('.hl-btn')?.classList.remove('active');
+  }
+  highlightedRows[rowFsContainerId] = newIdx;
+  rowFsRowIdx = newIdx;
+  const newTr = wrapper.querySelector(`[data-row-idx="${newIdx}"]`);
+  if (newTr) {
+    newTr.classList.add('grid-row-highlighted');
+    newTr.querySelector('.hl-btn')?.classList.add('active');
+    newTr.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  renderRowFS();
+}
+
+// ─────────────────────────────────────────────
+// PDF EXPORT
+// ─────────────────────────────────────────────
+function exportPDF() { window.print(); }
+
+// Reset zoom transform before printing so the grid renders at full scale
+window.addEventListener('beforeprint', () => {
+  document.querySelectorAll('.grid-zoom-box').forEach(box => {
+    box.dataset.pt = box.style.transform;
+    box.dataset.pw = box.style.width;
+    box.dataset.ph = box.style.height;
+    box.style.transform = 'none';
+    box.style.width = 'auto';
+    box.style.height = 'auto';
+  });
+});
+
+window.addEventListener('afterprint', () => {
+  document.querySelectorAll('.grid-zoom-box').forEach(box => {
+    box.style.transform = box.dataset.pt ?? '';
+    box.style.width     = box.dataset.pw ?? '';
+    box.style.height    = box.dataset.ph ?? '';
+  });
+});
+
+// ─────────────────────────────────────────────
 // TOAST
 // ─────────────────────────────────────────────
 let _toastTimer;
@@ -1553,6 +1788,7 @@ document.getElementById('folder-indicator').addEventListener('click', async () =
 
 document.getElementById('btn-back-view').addEventListener('click', () => navigate('designs'));
 document.getElementById('btn-edit-view').addEventListener('click', () => { if (viewDesignName) openEdit(viewDesignName); });
+document.getElementById('btn-export-pdf').addEventListener('click', exportPDF);
 document.getElementById('btn-zoom-in-view').addEventListener('click',  () => zoomIn('view-grid-wrapper'));
 document.getElementById('btn-zoom-out-view').addEventListener('click', () => zoomOut('view-grid-wrapper'));
 document.getElementById('btn-zoom-in-edit').addEventListener('click',  () => zoomIn('edit-grid-wrapper'));
@@ -1609,6 +1845,13 @@ document.getElementById('btn-apply-stitch').addEventListener('click', e => {
 });
 
 document.getElementById('btn-close-picker').addEventListener('click', closePicker);
+
+document.getElementById('btn-row-fs-close').addEventListener('click', closeRowFullscreen);
+document.getElementById('btn-row-fs-up').addEventListener('click',    () => navigateRowFS(-1));
+document.getElementById('btn-row-fs-down').addEventListener('click',  () => navigateRowFS(+1));
+document.getElementById('row-fs-overlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeRowFullscreen();
+});
 document.getElementById('picker-overlay').addEventListener('click', closePicker);
 
 document.getElementById('design-name-input').addEventListener('keydown', e => {
